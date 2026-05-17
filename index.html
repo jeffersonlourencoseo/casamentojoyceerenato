@@ -6,6 +6,9 @@
     <title>Planejamento Casamento</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -90,6 +93,14 @@
                     <button onclick="editarNomeNoiva()" class="p-2 rounded-lg hover:bg-rose-50 text-rose-600 transition-colors" title="Editar nome">
                         <i class="fas fa-pen text-sm"></i>
                     </button>
+                    <div id="syncStatus" class="hidden items-center space-x-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs">
+                        <i class="fas fa-sync fa-spin"></i>
+                        <span>Sync</span>
+                    </div>
+                    <button onclick="compartilharWhatsApp()" class="hidden sm:flex items-center space-x-2 px-3 py-2 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors text-sm font-medium" title="Compartilhar no WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>WhatsApp</span>
+                    </button>
                     <button onclick="exportarJSON()" class="hidden sm:flex items-center space-x-2 px-3 py-2 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors text-sm font-medium">
                         <i class="fas fa-download"></i>
                         <span>Exportar</span>
@@ -105,6 +116,9 @@
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <div id="mobileMenu" class="hidden absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+                            <button onclick="compartilharWhatsApp(); toggleMobileMenu()" class="w-full text-left px-4 py-2 hover:bg-green-50 text-green-700 text-sm">
+                                <i class="fab fa-whatsapp mr-2"></i>Compartilhar
+                            </button>
                             <button onclick="exportarJSON(); toggleMobileMenu()" class="w-full text-left px-4 py-2 hover:bg-rose-50 text-rose-700 text-sm">
                                 <i class="fas fa-download mr-2"></i>Exportar JSON
                             </button>
@@ -950,12 +964,121 @@
                     data = { ...data, ...parsed };
                 } catch (e) { console.error('Erro ao carregar dados', e); }
             }
+            initFirebase(); // tenta conectar ao Firebase
             atualizarUI();
         }
 
         function salvarDados() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            syncFirebase(); // tenta sync silencioso
             mostrarToast('Dados salvos!');
+        }
+
+        // ==================== FIREBASE SYNC ====================
+        // INSTRUÇÕES: Você precisa criar um projeto Firebase gratuito:
+        // 1. Acesse https://console.firebase.google.com
+        // 2. Clique em "Criar projeto" → dê um nome → "Continuar" → "Criar projeto"
+        // 3. No menu lateral, clique em "Realtime Database" → "Criar banco de dados" → "Começar no modo de teste" → "Habilitar"
+        // 4. Clique no ícone de engrenagem ⚙️ ao lado de "Visão geral do projeto" → "Configurações do projeto"
+        // 5. Na aba "Seus aplicativos", clique em "</c>" (Web)
+        // 6. Dê um apelido (ex: "casamento-app") → "Registrar app"
+        // 7. Copie as credenciais abaixo e cole aqui substituindo os placeholders
+        // 8. Nas Regras do Database (Realtime Database → Regras), defina: { "rules": { ".read": true, ".write": true } }
+
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+            projectId: "SEU_PROJETO",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "000000000000",
+            appId: "1:000000000000:web:0000000000000000000000"
+        };
+
+        let db = null;
+        let firebaseEnabled = false;
+
+        function initFirebase() {
+            // Só ativa se as credenciais forem substituídas
+            if (firebaseConfig.apiKey === "SUA_API_KEY_AQUI") {
+                console.log("Firebase não configurado. Siga as instruções no código para ativar o sync.");
+                return;
+            }
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+                firebaseEnabled = true;
+                listenFirebase(); // começa a ouvir mudanças
+                console.log("Firebase conectado! Sync ativo.");
+            } catch (e) {
+                console.error("Erro ao conectar Firebase:", e);
+            }
+        }
+
+        function syncFirebase() {
+            if (!firebaseEnabled || !db) return;
+            const syncEl = document.getElementById('syncStatus');
+            if (syncEl) syncEl.classList.remove('hidden');
+            db.ref('casamento').set(data).then(() => {
+                if (syncEl) { syncEl.classList.add('hidden'); }
+                console.log("Sync Firebase OK");
+            }).catch(err => {
+                if (syncEl) { syncEl.classList.add('hidden'); }
+                console.error("Erro sync Firebase:", err);
+            });
+        }
+
+        function listenFirebase() {
+            if (!firebaseEnabled || !db) return;
+            db.ref('casamento').on('value', snapshot => {
+                const val = snapshot.val();
+                if (val) {
+                    // Mescla os dados recebidos com os locais
+                    data = { ...data, ...val };
+                    atualizarUI();
+                }
+            });
+        }
+
+        // ==================== GOOGLE CALENDAR ====================
+        function adicionarAoGoogleCalendar(id) {
+            const c = data.cronograma.find(x => x.id === id);
+            if (!c || !c.data) { alert('Evento sem data definida.'); return; }
+
+            const dataInicio = c.data.replace(/-/g, '');
+            const dataFim = c.data.replace(/-/g, '');
+            const horaInicio = c.hora ? c.hora.replace(':', '') + '00' : '100000';
+            const horaFim = c.hora ? String(parseInt(c.hora.split(':')[0]) + 1).padStart(2, '0') + c.hora.split(':')[1] + '00' : '120000';
+
+            const params = new URLSearchParams({
+                action: 'TEMPLATE',
+                text: c.evento,
+                dates: `${dataInicio}T${horaInicio}/${dataInicio}T${horaFim}`,
+                details: c.desc || '',
+                location: 'Salão Tubarão',
+            });
+
+            window.open(`https://www.google.com/calendar/render?${params.toString()}`, '_blank');
+        }
+
+        // ==================== WHATSAPP SHARE ====================
+        function compartilharWhatsApp() {
+            const totalConv = data.convidados.length;
+            const confirmados = data.convidados.filter(c => c.rsvp === 'Sim').length;
+            const almoco = data.convidados.filter(c => c.momento === 'Almoço' || c.momento === 'Ambos').length;
+            const festa = data.convidados.filter(c => c.momento === 'Festa' || c.momento === 'Ambos').length;
+            const totalOrc = data.orcamento.reduce((a, o) => a + (parseFloat(o.real) || 0), 0);
+            const pendentes = data.tarefas.filter(t => t.status !== 'Feito').length;
+
+            const msg = `*Planejamento Casamento ${data.noiva}* 💍%0A%0A` +
+                `📋 *Convidados:* ${confirmados}/${totalConv} confirmados%0A` +
+                `🍽️ *Almoço:* ${almoco} pessoas%0A` +
+                `🎉 *Festa:* ${festa} pessoas%0A` +
+                `💰 *Total gasto:* R$ ${formatarMoeda(totalOrc)}%0A` +
+                `📌 *Tarefas pendentes:* ${pendentes}%0A%0A` +
+                `Acesse o dashboard: https://casamentojoyceerenato.vercel.app`;
+
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
         }
 
         function atualizarUI() {
@@ -1366,6 +1489,7 @@
                         </div>
                         <p class="text-sm text-gray-600">${escapeHtml(c.desc) || ''}</p>
                         <div class="flex justify-end mt-2 space-x-2">
+                            ${c.data ? `<button onclick="adicionarAoGoogleCalendar(${c.id})" class="text-xs text-blue-600 hover:text-blue-800 font-medium" title="Adicionar ao Google Calendar"><i class="far fa-calendar-plus mr-1"></i>Calendar</button>` : ''}
                             <button onclick="editarCronograma(${c.id})" class="text-xs text-rose-600 hover:text-rose-800 font-medium"><i class="fas fa-edit mr-1"></i>Editar</button>
                             <button onclick="excluirCronograma(${c.id})" class="text-xs text-gray-400 hover:text-red-600 font-medium"><i class="fas fa-trash mr-1"></i>Excluir</button>
                         </div>
