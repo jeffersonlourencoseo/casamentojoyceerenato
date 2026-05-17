@@ -208,7 +208,7 @@
                             oninput="filtrarConvidados()">
                     </div>
                     <select id="filtroRSVP" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
-                        <option value="">Todos RSVP</option>
+                        <option value="">Todos</option>
                         <option value="Sim">Sim</option>
                         <option value="Não">Não</option>
                         <option value="Talvez">Talvez</option>
@@ -219,9 +219,6 @@
                         <option value="Festa">Festa</option>
                         <option value="Ambos">Ambos</option>
                     </select>
-                    <select id="filtroMesa" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
-                        <option value="">Todas Mesas</option>
-                    </select>
                 </div>
 
                 <!-- Table -->
@@ -230,12 +227,8 @@
                         <thead>
                             <tr class="border-b border-gray-100">
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome</th>
-                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Acompanhante</th>
-                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Telefone</th>
-                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">RSVP</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Confirmado</th>
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Momento</th>
-                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Alergias</th>
-                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Mesa</th>
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Observações</th>
                                 <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Ações</th>
                             </tr>
@@ -440,6 +433,13 @@
 
         <!-- ==================== CARDÁPIO ==================== -->
         <div id="tab-cardapio" class="tab-content hidden animate-fade-in">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">Cardápio</h2>
+                <button onclick="abrirModalCardapio()" class="btn-primary text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 shadow-lg shadow-rose-200">
+                    <i class="fas fa-edit"></i>
+                    <span>Editar Cardápio</span>
+                </button>
+            </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Cardápio Almoço -->
                 <div class="bg-white rounded-xl card-shadow p-5 sm:p-6">
@@ -453,7 +453,7 @@
                         </div>
                     </div>
 
-                    <div class="space-y-4">
+                    <div id="cardapioAlmocoContent" class="space-y-4">
                         <div class="border-l-4 border-rose-400 pl-4 py-2">
                             <h3 class="font-semibold text-gray-800 mb-1">Churrasco Completo</h3>
                             <ul class="text-sm text-gray-600 space-y-1">
@@ -508,7 +508,7 @@
                         </div>
                     </div>
 
-                    <div class="space-y-4">
+                    <div id="cardapioFestaContent" class="space-y-4">
                         <div class="border-l-4 border-purple-400 pl-4 py-2">
                             <h3 class="font-semibold text-gray-800 mb-1">Mesa de Doces</h3>
                             <ul class="text-sm text-gray-600 space-y-1">
@@ -562,17 +562,9 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
                         <input type="text" id="convidadoNome" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Acompanhante</label>
-                        <input type="text" id="convidadoAcompanhante" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
-                        <input type="tel" id="convidadoTelefone" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
-                    </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">RSVP</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Confirmado</label>
                             <select id="convidadoRSVP" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
                                 <option value="">Selecione</option>
                                 <option value="Sim">Sim</option>
@@ -587,16 +579,6 @@
                                 <option value="Festa">Festa</option>
                                 <option value="Ambos">Ambos</option>
                             </select>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Mesa</label>
-                            <input type="text" id="convidadoMesa" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Alergias / Restrições</label>
-                            <input type="text" id="convidadoAlergias" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
                         </div>
                     </div>
                     <div>
@@ -809,6 +791,28 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Noiva</label>
                         <input type="text" id="inputNomeNoiva" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
                     </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" onclick="fecharModal()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">Cancelar</button>
+                        <button type="submit" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Cardápio -->
+        <div id="modalCardapio" class="modal hidden bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Editar Cardápio</h3>
+                <form onsubmit="salvarCardapio(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Cardápio Almoço (HTML)</label>
+                        <textarea id="cardapioAlmocoEdit" rows="8" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose text-xs font-mono"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Cardápio Festa (HTML)</label>
+                        <textarea id="cardapioFestaEdit" rows="8" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose text-xs font-mono"></textarea>
+                    </div>
+                    <p class="text-xs text-gray-500">Você pode editar o HTML diretamente. Cuidado para não remover as classes de estilo.</p>
                     <div class="flex justify-end space-x-3 pt-2">
                         <button type="button" onclick="fecharModal()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">Cancelar</button>
                         <button type="submit" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">Salvar</button>
@@ -1051,6 +1055,19 @@
             window.open(`https://www.google.com/calendar/render?${params.toString()}`, '_blank');
         }
 
+        function adicionarTarefaAoCalendar(id) {
+            const t = data.tarefas.find(x => x.id === id);
+            if (!t || !t.prazo) { alert('Tarefa sem prazo definido.'); return; }
+            const dataInicio = t.prazo.replace(/-/g, '');
+            const params = new URLSearchParams({
+                action: 'TEMPLATE',
+                text: t.titulo,
+                dates: `${dataInicio}T090000/${dataInicio}T100000`,
+                details: `Responsável: ${t.responsavel || 'Não definido'}\nPrioridade: ${t.prioridade}\nStatus: ${t.status}`,
+            });
+            window.open(`https://www.google.com/calendar/render?${params.toString()}`, '_blank');
+        }
+
         // ==================== WHATSAPP SHARE ====================
         function compartilharWhatsApp() {
             const totalConv = data.convidados.length;
@@ -1078,8 +1095,8 @@
             renderizarTarefas();
             renderizarFornecedores();
             renderizarCronograma();
+            renderizarCardapio();
             document.getElementById('editorNotas').innerHTML = data.notas || '';
-            atualizarFiltroMesas();
             atualizarContadoresMomento();
         }
 
@@ -1113,15 +1130,13 @@
             const tbody = document.getElementById('tabelaConvidados');
             const busca = document.getElementById('buscaConvidado').value.toLowerCase();
             const filtroRSVP = document.getElementById('filtroRSVP').value;
-            const filtroMesa = document.getElementById('filtroMesa').value;
             const filtroMomento = document.getElementById('filtroMomento').value;
 
             let filtrados = data.convidados.filter(c => {
-                const matchBusca = !busca || c.nome.toLowerCase().includes(busca) || (c.acompanhante && c.acompanhante.toLowerCase().includes(busca));
+                const matchBusca = !busca || c.nome.toLowerCase().includes(busca);
                 const matchRSVP = !filtroRSVP || c.rsvp === filtroRSVP;
-                const matchMesa = !filtroMesa || c.mesa === filtroMesa;
                 const matchMomento = !filtroMomento || c.momento === filtroMomento;
-                return matchBusca && matchRSVP && matchMesa && matchMomento;
+                return matchBusca && matchRSVP && matchMomento;
             });
 
             document.getElementById('totalConvidados').textContent = filtrados.length;
@@ -1144,27 +1159,15 @@
                 return `
                 <tr class="hover:bg-rose-50/50 transition-colors">
                     <td class="py-3 px-4 text-sm font-medium text-gray-900">${escapeHtml(c.nome)}</td>
-                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.acompanhante || '-')}</td>
-                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.telefone || '-')}</td>
                     <td class="py-3 px-4"><span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${badgeClass}">${c.rsvp || 'Pendente'}</span></td>
                     <td class="py-3 px-4"><span class="inline-flex px-2 py-1 rounded-full text-xs font-medium ${momentoClass}">${c.momento || 'Festa'}</span></td>
-                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.alergias || '-')}</td>
-                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.mesa || '-')}</td>
-                    <td class="py-3 px-4 text-sm text-gray-600 max-w-[150px] truncate" title="${escapeHtml(c.obs)}">${escapeHtml(c.obs || '-')}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600 max-w-[200px] truncate" title="${escapeHtml(c.obs)}">${escapeHtml(c.obs || '-')}</td>
                     <td class="py-3 px-4 text-right">
                         <button onclick="editarConvidado(${c.id})" class="text-rose-600 hover:text-rose-800 mr-2"><i class="fas fa-edit"></i></button>
                         <button onclick="excluirConvidado(${c.id})" class="text-gray-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
             }).join('');
-        }
-
-        function atualizarFiltroMesas() {
-            const mesas = [...new Set(data.convidados.map(c => c.mesa).filter(Boolean))].sort();
-            const select = document.getElementById('filtroMesa');
-            const valAtual = select.value;
-            select.innerHTML = '<option value="">Todas Mesas</option>' + mesas.map(m => `<option value="${m}">Mesa ${m}</option>`).join('');
-            select.value = valAtual;
         }
 
         function filtrarConvidados() { renderizarConvidados(); }
@@ -1177,12 +1180,8 @@
                 document.getElementById('tituloModalConvidado').textContent = 'Editar Convidado';
                 document.getElementById('convidadoId').value = c.id;
                 document.getElementById('convidadoNome').value = c.nome;
-                document.getElementById('convidadoAcompanhante').value = c.acompanhante;
-                document.getElementById('convidadoTelefone').value = c.telefone;
                 document.getElementById('convidadoRSVP').value = c.rsvp;
                 document.getElementById('convidadoMomento').value = c.momento || 'Festa';
-                document.getElementById('convidadoAlergias').value = c.alergias;
-                document.getElementById('convidadoMesa').value = c.mesa;
                 document.getElementById('convidadoObs').value = c.obs;
             } else {
                 document.getElementById('tituloModalConvidado').textContent = 'Adicionar Convidado';
@@ -1197,23 +1196,18 @@
             const obj = {
                 id: id ? parseInt(id) : Date.now(),
                 nome: document.getElementById('convidadoNome').value,
-                acompanhante: document.getElementById('convidadoAcompanhante').value,
-                telefone: document.getElementById('convidadoTelefone').value,
                 rsvp: document.getElementById('convidadoRSVP').value,
                 momento: document.getElementById('convidadoMomento').value,
-                alergias: document.getElementById('convidadoAlergias').value,
-                mesa: document.getElementById('convidadoMesa').value,
                 obs: document.getElementById('convidadoObs').value,
             };
             if (id) {
                 const idx = data.convidados.findIndex(c => c.id === parseInt(id));
-                data.convidados[idx] = obj;
+                data.convidados[idx] = { ...data.convidados[idx], ...obj };
             } else {
                 data.convidados.push(obj);
             }
             fecharModal();
             renderizarConvidados();
-            atualizarFiltroMesas();
             atualizarContadoresMomento();
             salvarDados();
         }
@@ -1352,7 +1346,7 @@
                             <h4 class="font-medium text-gray-900 text-sm leading-snug">${escapeHtml(t.titulo)}</h4>
                             <button onclick="event.stopPropagation(); excluirTarefa(${t.id})" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-times"></i></button>
                         </div>
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between mb-2">
                             <div class="flex items-center space-x-2">
                                 <span class="text-xs px-2 py-0.5 rounded ${pClass}">${t.prioridade}</span>
                             </div>
@@ -1361,6 +1355,7 @@
                                 ${t.prazo ? `<span><i class="far fa-calendar mr-1"></i>${formatarData(t.prazo)}</span>` : ''}
                             </div>
                         </div>
+                        ${t.prazo ? `<div class="flex justify-end"><button onclick="event.stopPropagation(); adicionarTarefaAoCalendar(${t.id})" class="text-xs text-blue-600 hover:text-blue-800 font-medium" title="Adicionar ao Google Calendar"><i class="far fa-calendar-plus mr-1"></i>Calendar</button></div>` : ''}
                     </div>`;
                 }).join('') || '<div class="text-center py-8 text-gray-400 text-sm">Nenhuma tarefa</div>';
             });
@@ -1544,6 +1539,28 @@
             data.noiva = document.getElementById('inputNomeNoiva').value;
             fecharModal();
             atualizarUI();
+            salvarDados();
+        }
+
+        // ==================== CARDÁPIO ====================
+        function renderizarCardapio() {
+            if (data.cardapioAlmoco) document.getElementById('cardapioAlmocoContent').innerHTML = data.cardapioAlmoco;
+            if (data.cardapioFesta) document.getElementById('cardapioFestaContent').innerHTML = data.cardapioFesta;
+        }
+
+        function abrirModalCardapio() {
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            document.getElementById('modalCardapio').classList.remove('hidden');
+            document.getElementById('cardapioAlmocoEdit').value = document.getElementById('cardapioAlmocoContent').innerHTML;
+            document.getElementById('cardapioFestaEdit').value = document.getElementById('cardapioFestaContent').innerHTML;
+        }
+
+        function salvarCardapio(e) {
+            e.preventDefault();
+            data.cardapioAlmoco = document.getElementById('cardapioAlmocoEdit').value;
+            data.cardapioFesta = document.getElementById('cardapioFestaEdit').value;
+            renderizarCardapio();
+            fecharModal();
             salvarDados();
         }
 
