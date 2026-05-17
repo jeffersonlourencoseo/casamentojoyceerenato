@@ -142,6 +142,10 @@
                         <i class="fas fa-calendar-alt"></i>
                         <span>Cronograma</span>
                     </button>
+                    <button onclick="switchTab('cardapio')" class="tab-btn tab-inactive px-4 py-3 text-sm whitespace-nowrap transition-all flex items-center space-x-2" data-tab="cardapio">
+                        <i class="fas fa-utensils"></i>
+                        <span>Cardápio</span>
+                    </button>
                     <button onclick="switchTab('notas')" class="tab-btn tab-inactive px-4 py-3 text-sm whitespace-nowrap transition-all flex items-center space-x-2" data-tab="notas">
                         <i class="fas fa-sticky-note"></i>
                         <span>Notas</span>
@@ -168,6 +172,19 @@
                     </button>
                 </div>
 
+                <!-- Summary Counts -->
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <div class="bg-rose-50 border border-rose-100 rounded-lg px-3 py-2 text-sm">
+                        <span class="font-medium text-rose-700">Almoço:</span> <span id="countAlmoco" class="font-bold">0</span>
+                    </div>
+                    <div class="bg-gold-50 border border-gold-100 rounded-lg px-3 py-2 text-sm">
+                        <span class="font-medium text-gold-700">Festa:</span> <span id="countFesta" class="font-bold">0</span>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 text-sm">
+                        <span class="font-medium text-emerald-700">Ambos:</span> <span id="countAmbos" class="font-bold">0</span>
+                    </div>
+                </div>
+
                 <!-- Filters -->
                 <div class="flex flex-col sm:flex-row gap-3 mb-4">
                     <div class="relative flex-1">
@@ -181,6 +198,12 @@
                         <option value="Sim">Sim</option>
                         <option value="Não">Não</option>
                         <option value="Talvez">Talvez</option>
+                    </select>
+                    <select id="filtroMomento" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
+                        <option value="">Todos Momentos</option>
+                        <option value="Almoço">Almoço</option>
+                        <option value="Festa">Festa</option>
+                        <option value="Ambos">Ambos</option>
                     </select>
                     <select id="filtroMesa" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
                         <option value="">Todas Mesas</option>
@@ -196,6 +219,7 @@
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Acompanhante</th>
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Telefone</th>
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">RSVP</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Momento</th>
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Alergias</th>
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Mesa</th>
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Observações</th>
@@ -400,6 +424,114 @@
             </div>
         </div>
 
+        <!-- ==================== CARDÁPIO ==================== -->
+        <div id="tab-cardapio" class="tab-content hidden animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Cardápio Almoço -->
+                <div class="bg-white rounded-xl card-shadow p-5 sm:p-6">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900">Cardápio Almoço</h2>
+                            <p class="text-sm text-gray-500">Recepção dos convidados selecionados</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-rose-400 pl-4 py-2">
+                            <h3 class="font-semibold text-gray-800 mb-1">Churrasco Completo</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li><i class="fas fa-check text-rose-400 mr-2"></i>Carne (8kg)</li>
+                                <li><i class="fas fa-check text-rose-400 mr-2"></i>Frango (4kg)</li>
+                                <li><i class="fas fa-check text-rose-400 mr-2"></i>Porco (4kg)</li>
+                                <li><i class="fas fa-check text-rose-400 mr-2"></i>Coração (2kg)</li>
+                                <li><i class="fas fa-check text-rose-400 mr-2"></i>Linguiça</li>
+                            </ul>
+                        </div>
+
+                        <div class="border-l-4 border-gold-400 pl-4 py-2">
+                            <h3 class="font-semibold text-gray-800 mb-1">Guarnições</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li><i class="fas fa-check text-gold-400 mr-2"></i>Arroz (2kg)</li>
+                                <li><i class="fas fa-check text-gold-400 mr-2"></i>Maionese (4kg)</li>
+                                <li><i class="fas fa-check text-gold-400 mr-2"></i>Vinagrete (2kg)</li>
+                                <li><i class="fas fa-check text-gold-400 mr-2"></i>Farofa (2kg)</li>
+                            </ul>
+                        </div>
+
+                        <div class="border-l-4 border-emerald-400 pl-4 py-2">
+                            <h3 class="font-semibold text-gray-800 mb-1">Acompanhamentos</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li><i class="fas fa-check text-emerald-400 mr-2"></i>Estrogonofe de frango</li>
+                                <li><i class="fas fa-check text-emerald-400 mr-2"></i>Salgadinhos (500 un)</li>
+                                <li><i class="fas fa-check text-emerald-400 mr-2"></i>Tira gosto (salame, azeitona, ovo de codorna)</li>
+                                <li><i class="fas fa-check text-emerald-400 mr-2"></i>Conserva (batata calabresa e sacanagem)</li>
+                            </ul>
+                        </div>
+
+                        <div class="border-l-4 border-blue-400 pl-4 py-2">
+                            <h3 class="font-semibold text-gray-800 mb-1">Bebidas</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li><i class="fas fa-check text-blue-400 mr-2"></i>Chopp (3 barris)</li>
+                                <li><i class="fas fa-check text-blue-400 mr-2"></i>Refrigerante 500ml</li>
+                                <li><i class="fas fa-check text-blue-400 mr-2"></i>Água 300ml (43L total)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cardápio Festa -->
+                <div class="bg-white rounded-xl card-shadow p-5 sm:p-6">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900">Cardápio Festa</h2>
+                            <p class="text-sm text-gray-500">Celebração com todos os convidados</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-purple-400 pl-4 py-2">
+                            <h3 class="font-semibold text-gray-800 mb-1">Mesa de Doces</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li><i class="fas fa-check text-purple-400 mr-2"></i>Bolo de casamento</li>
+                                <li><i class="fas fa-check text-purple-400 mr-2"></i>Doces variados</li>
+                            </ul>
+                        </div>
+
+                        <div class="border-l-4 border-pink-400 pl-4 py-2">
+                            <h3 class="font-semibold text-gray-800 mb-1">Decoração e Ambiente</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li><i class="fas fa-check text-pink-400 mr-2"></i>Decoração completa do salão</li>
+                                <li><i class="fas fa-check text-pink-400 mr-2"></i>Lembrancinhas / Centro de mesa</li>
+                            </ul>
+                        </div>
+
+                        <div class="border-l-4 border-indigo-400 pl-4 py-2">
+                            <h3 class="font-semibold text-gray-800 mb-1">Entretenimento</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li><i class="fas fa-check text-indigo-400 mr-2"></i>DJ contratado</li>
+                                <li><i class="fas fa-check text-indigo-400 mr-2"></i>Som e iluminação</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-gold-50 rounded-lg p-4 mt-4">
+                            <h4 class="font-semibold text-gold-800 mb-2 flex items-center">
+                                <i class="fas fa-clock mr-2"></i>Horário
+                            </h4>
+                            <p class="text-sm text-gray-700">Salão Tubarão: <strong>10h às 22:30</strong></p>
+                            <p class="text-sm text-gray-600 mt-1">Almoço: a partir das 11h</p>
+                            <p class="text-sm text-gray-600">Festa: a partir das 16h</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- ==================== MODAIS ==================== -->
@@ -435,13 +567,23 @@
                             </select>
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Momento</label>
+                            <select id="convidadoMomento" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                                <option value="Almoço">Almoço</option>
+                                <option value="Festa">Festa</option>
+                                <option value="Ambos">Ambos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Mesa</label>
                             <input type="text" id="convidadoMesa" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
                         </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Alergias / Restrições</label>
-                        <input type="text" id="convidadoAlergias" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Alergias / Restrições</label>
+                            <input type="text" id="convidadoAlergias" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
@@ -675,78 +817,78 @@
         let data = {
             noiva: 'Joyce',
             convidados: [
-                // Confirmados (Sim)
-                { id: 1, nome: 'Joyce Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Noiva' },
-                { id: 2, nome: 'Renato Pedra', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
-                { id: 3, nome: 'Denise Pedra de Souza', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
-                { id: 4, nome: 'Edson', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
-                { id: 5, nome: 'Ana Cristina', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
-                { id: 6, nome: 'Roberto Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
-                { id: 7, nome: 'Jean Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
-                { id: 8, nome: 'Jefferson Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
-                { id: 9, nome: 'Tatiane Silva', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '2', obs: 'Adulto' },
-                { id: 10, nome: 'Rayane Macêdo', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '2', obs: 'Adulto' },
-                { id: 11, nome: 'Elis Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '2', obs: 'Criança Pagante' },
-                { id: 12, nome: 'Mariana Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '2', obs: 'Criança Pagante' },
-                { id: 13, nome: 'Marcia Regina', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '3', obs: 'Adulto' },
-                { id: 14, nome: 'Jorcely Borges da Silva', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '3', obs: 'Adulto' },
-                { id: 15, nome: 'Marcia Nina', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '3', obs: 'Adulto' },
-                { id: 16, nome: 'Jorge Miguel', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '3', obs: 'Adulto' },
+                // Confirmados - Almoço (Família próxima)
+                { id: 1, nome: 'Joyce Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Ambos', alergias: '', mesa: '1', obs: 'Noiva' },
+                { id: 2, nome: 'Renato Pedra', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Ambos', alergias: '', mesa: '1', obs: 'Noivo' },
+                { id: 3, nome: 'Denise Pedra de Souza', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Ambos', alergias: '', mesa: '1', obs: 'Mãe do noivo' },
+                { id: 4, nome: 'Edson', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Ambos', alergias: '', mesa: '1', obs: 'Pai do noivo' },
+                { id: 5, nome: 'Ana Cristina', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Ambos', alergias: '', mesa: '1', obs: 'Adulto' },
+                { id: 6, nome: 'Roberto Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Ambos', alergias: '', mesa: '1', obs: 'Pai da noiva' },
+                { id: 7, nome: 'Jean Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Ambos', alergias: '', mesa: '1', obs: 'Irmão da noiva' },
+                { id: 8, nome: 'Jefferson Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Ambos', alergias: '', mesa: '1', obs: 'Irmão da noiva' },
+                { id: 9, nome: 'Tatiane Silva', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Festa', alergias: '', mesa: '2', obs: 'Adulto' },
+                { id: 10, nome: 'Rayane Macêdo', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Festa', alergias: '', mesa: '2', obs: 'Adulto' },
+                { id: 11, nome: 'Elis Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Ambos', alergias: '', mesa: '2', obs: 'Criança Pagante' },
+                { id: 12, nome: 'Mariana Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Ambos', alergias: '', mesa: '2', obs: 'Criança Pagante' },
+                { id: 13, nome: 'Marcia Regina', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Festa', alergias: '', mesa: '3', obs: 'Adulto' },
+                { id: 14, nome: 'Jorcely Borges da Silva', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Festa', alergias: '', mesa: '3', obs: 'Adulto' },
+                { id: 15, nome: 'Marcia Nina', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Festa', alergias: '', mesa: '3', obs: 'Adulto' },
+                { id: 16, nome: 'Jorge Miguel', acompanhante: '', telefone: '', rsvp: 'Sim', momento: 'Festa', alergias: '', mesa: '3', obs: 'Adulto' },
                 // Pendentes
-                { id: 17, nome: 'Edna', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '4', obs: 'Adulto' },
-                { id: 18, nome: 'Daniel Ramos', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '4', obs: 'Adulto' },
-                { id: 19, nome: 'Yago', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '4', obs: 'Adulto' },
-                { id: 20, nome: 'Kaíque', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '4', obs: 'Adulto' },
-                { id: 21, nome: 'Erick', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '5', obs: 'Criança Pagante' },
-                { id: 22, nome: 'Cauã', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '5', obs: 'Criança Pagante' },
-                { id: 23, nome: 'Jurema', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '5', obs: 'Adulto' },
-                { id: 24, nome: 'Maycon', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '5', obs: 'Adulto' },
-                { id: 25, nome: 'Nando', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '5', obs: 'Adulto' },
-                { id: 26, nome: 'Esposa Nando', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '6', obs: 'Adulto' },
-                { id: 27, nome: 'Nathalia Lourenço', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '6', obs: 'Adulto' },
-                { id: 28, nome: 'Letícia Lourenço', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '6', obs: 'Criança Pagante' },
-                { id: 29, nome: 'Mara', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '6', obs: 'Adulto' },
-                { id: 30, nome: 'Robson', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '6', obs: 'Adulto' },
-                { id: 31, nome: 'Juçara', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '7', obs: 'Adulto' },
-                { id: 32, nome: 'Isabella Maria Oliveira dos Santos', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '7', obs: 'Adulto' },
-                { id: 33, nome: 'Danielle Isabela', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '7', obs: 'Adulto' },
-                { id: 34, nome: 'Luciene', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '7', obs: 'Adulto' },
-                { id: 35, nome: 'Marquinhos', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '7', obs: 'Adulto' },
-                { id: 36, nome: 'Thayane Procession', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '8', obs: 'Adulto' },
-                { id: 37, nome: 'Felipe Silva', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '8', obs: 'Adulto' },
-                { id: 38, nome: 'Elane (Alessandre)', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '8', obs: 'Adulto' },
-                { id: 39, nome: 'Alessandre', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '8', obs: 'Adulto' },
-                { id: 40, nome: 'Leandro Lourenço', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '8', obs: 'Adulto' },
-                { id: 41, nome: 'Jessica Lucio', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '9', obs: 'Adulto' },
-                { id: 42, nome: 'Renan Querino', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '9', obs: 'Adulto' },
-                { id: 43, nome: 'Tainara Souza', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '9', obs: 'Adulto' },
-                { id: 44, nome: 'Mariana Machado', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '9', obs: 'Adulto' },
-                { id: 45, nome: 'Vitor Henrique', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '9', obs: 'Adulto' },
-                { id: 46, nome: 'Rayane Cristina', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '10', obs: 'Adulto' },
-                { id: 47, nome: 'Thales', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '10', obs: 'Adulto' },
-                { id: 48, nome: 'Karina Teixeira', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '10', obs: 'Adulto' },
-                { id: 49, nome: 'Mary Arvelos', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '10', obs: 'Adulto' },
-                { id: 50, nome: 'Leticia Fernandes', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '10', obs: 'Adulto' },
-                { id: 51, nome: 'Marcelinho', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '11', obs: 'Adulto' },
-                { id: 52, nome: 'Lucas Santana (Primo)', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '11', obs: 'Adulto' },
-                { id: 53, nome: 'Vitor Primo', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '11', obs: 'Adulto' },
-                { id: 54, nome: 'Bucha', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '11', obs: 'Adulto' },
-                { id: 55, nome: 'Vida', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '11', obs: 'Adulto' },
-                { id: 56, nome: 'Mires', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '12', obs: 'Adulto' },
-                { id: 57, nome: 'Leandro Mires', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '12', obs: 'Adulto' },
-                { id: 58, nome: 'Leandro', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '12', obs: 'Adulto' },
-                { id: 59, nome: 'Pamela', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '12', obs: 'Adulto' },
-                { id: 60, nome: 'Bia', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '12', obs: 'Adulto' },
-                { id: 61, nome: 'Gabi', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '13', obs: 'Adulto' },
-                { id: 62, nome: 'Filipe Ramos Braga Salgueiro', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '13', obs: 'Adulto' },
-                { id: 63, nome: 'Luiza Paes', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '13', obs: 'Adulto' },
-                { id: 64, nome: 'Rato', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '13', obs: 'Adulto' },
-                { id: 65, nome: 'Caveira', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '14', obs: 'Adulto' },
-                { id: 66, nome: 'Siri', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '14', obs: 'Adulto' },
-                { id: 67, nome: 'Chokito', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '14', obs: 'Adulto' },
-                { id: 68, nome: 'Serginho', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '14', obs: 'Adulto' },
-                { id: 69, nome: 'Leleo', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '14', obs: 'Adulto' },
-                { id: 70, nome: 'Gustavinho', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '15', obs: 'Adulto' },
+                { id: 17, nome: 'Edna', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '4', obs: 'Adulto' },
+                { id: 18, nome: 'Daniel Ramos', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '4', obs: 'Adulto' },
+                { id: 19, nome: 'Yago', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '4', obs: 'Adulto' },
+                { id: 20, nome: 'Kaíque', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '4', obs: 'Adulto' },
+                { id: 21, nome: 'Erick', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '5', obs: 'Criança Pagante' },
+                { id: 22, nome: 'Cauã', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '5', obs: 'Criança Pagante' },
+                { id: 23, nome: 'Jurema', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '5', obs: 'Adulto' },
+                { id: 24, nome: 'Maycon', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '5', obs: 'Adulto' },
+                { id: 25, nome: 'Nando', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '5', obs: 'Adulto' },
+                { id: 26, nome: 'Esposa Nando', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '6', obs: 'Adulto' },
+                { id: 27, nome: 'Nathalia Lourenço', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '6', obs: 'Adulto' },
+                { id: 28, nome: 'Letícia Lourenço', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '6', obs: 'Criança Pagante' },
+                { id: 29, nome: 'Mara', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '6', obs: 'Adulto' },
+                { id: 30, nome: 'Robson', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '6', obs: 'Adulto' },
+                { id: 31, nome: 'Juçara', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '7', obs: 'Adulto' },
+                { id: 32, nome: 'Isabella Maria Oliveira dos Santos', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '7', obs: 'Adulto' },
+                { id: 33, nome: 'Danielle Isabela', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '7', obs: 'Adulto' },
+                { id: 34, nome: 'Luciene', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '7', obs: 'Adulto' },
+                { id: 35, nome: 'Marquinhos', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '7', obs: 'Adulto' },
+                { id: 36, nome: 'Thayane Procession', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '8', obs: 'Adulto' },
+                { id: 37, nome: 'Felipe Silva', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '8', obs: 'Adulto' },
+                { id: 38, nome: 'Elane (Alessandre)', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '8', obs: 'Adulto' },
+                { id: 39, nome: 'Alessandre', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '8', obs: 'Adulto' },
+                { id: 40, nome: 'Leandro Lourenço', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '8', obs: 'Adulto' },
+                { id: 41, nome: 'Jessica Lucio', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '9', obs: 'Adulto' },
+                { id: 42, nome: 'Renan Querino', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '9', obs: 'Adulto' },
+                { id: 43, nome: 'Tainara Souza', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '9', obs: 'Adulto' },
+                { id: 44, nome: 'Mariana Machado', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '9', obs: 'Adulto' },
+                { id: 45, nome: 'Vitor Henrique', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '9', obs: 'Adulto' },
+                { id: 46, nome: 'Rayane Cristina', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '10', obs: 'Adulto' },
+                { id: 47, nome: 'Thales', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '10', obs: 'Adulto' },
+                { id: 48, nome: 'Karina Teixeira', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '10', obs: 'Adulto' },
+                { id: 49, nome: 'Mary Arvelos', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '10', obs: 'Adulto' },
+                { id: 50, nome: 'Leticia Fernandes', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '10', obs: 'Adulto' },
+                { id: 51, nome: 'Marcelinho', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '11', obs: 'Adulto' },
+                { id: 52, nome: 'Lucas Santana (Primo)', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '11', obs: 'Adulto' },
+                { id: 53, nome: 'Vitor Primo', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '11', obs: 'Adulto' },
+                { id: 54, nome: 'Bucha', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '11', obs: 'Adulto' },
+                { id: 55, nome: 'Vida', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '11', obs: 'Adulto' },
+                { id: 56, nome: 'Mires', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '12', obs: 'Adulto' },
+                { id: 57, nome: 'Leandro Mires', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '12', obs: 'Adulto' },
+                { id: 58, nome: 'Leandro', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '12', obs: 'Adulto' },
+                { id: 59, nome: 'Pamela', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '12', obs: 'Adulto' },
+                { id: 60, nome: 'Bia', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '12', obs: 'Adulto' },
+                { id: 61, nome: 'Gabi', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '13', obs: 'Adulto' },
+                { id: 62, nome: 'Filipe Ramos Braga Salgueiro', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '13', obs: 'Adulto' },
+                { id: 63, nome: 'Luiza Paes', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '13', obs: 'Adulto' },
+                { id: 64, nome: 'Rato', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '13', obs: 'Adulto' },
+                { id: 65, nome: 'Caveira', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '14', obs: 'Adulto' },
+                { id: 66, nome: 'Siri', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '14', obs: 'Adulto' },
+                { id: 67, nome: 'Chokito', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '14', obs: 'Adulto' },
+                { id: 68, nome: 'Serginho', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '14', obs: 'Adulto' },
+                { id: 69, nome: 'Leleo', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '14', obs: 'Adulto' },
+                { id: 70, nome: 'Gustavinho', acompanhante: '', telefone: '', rsvp: '', momento: 'Festa', alergias: '', mesa: '15', obs: 'Adulto' },
                 { id: 71, nome: 'Kesse', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '15', obs: 'Adulto' },
                 { id: 72, nome: 'Higor', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '15', obs: 'Adulto' },
                 { id: 73, nome: 'JV', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '15', obs: 'Adulto' },
@@ -825,6 +967,17 @@
             renderizarCronograma();
             document.getElementById('editorNotas').innerHTML = data.notas || '';
             atualizarFiltroMesas();
+            atualizarContadoresMomento();
+        }
+
+        function atualizarContadoresMomento() {
+            const counts = { 'Almoço': 0, 'Festa': 0, 'Ambos': 0 };
+            data.convidados.forEach(c => {
+                if (c.momento) counts[c.momento]++;
+            });
+            document.getElementById('countAlmoco').textContent = counts['Almoço'];
+            document.getElementById('countFesta').textContent = counts['Festa'];
+            document.getElementById('countAmbos').textContent = counts['Ambos'];
         }
 
         // ==================== TABS ====================
@@ -848,12 +1001,14 @@
             const busca = document.getElementById('buscaConvidado').value.toLowerCase();
             const filtroRSVP = document.getElementById('filtroRSVP').value;
             const filtroMesa = document.getElementById('filtroMesa').value;
+            const filtroMomento = document.getElementById('filtroMomento').value;
 
             let filtrados = data.convidados.filter(c => {
                 const matchBusca = !busca || c.nome.toLowerCase().includes(busca) || (c.acompanhante && c.acompanhante.toLowerCase().includes(busca));
                 const matchRSVP = !filtroRSVP || c.rsvp === filtroRSVP;
                 const matchMesa = !filtroMesa || c.mesa === filtroMesa;
-                return matchBusca && matchRSVP && matchMesa;
+                const matchMomento = !filtroMomento || c.momento === filtroMomento;
+                return matchBusca && matchRSVP && matchMesa && matchMomento;
             });
 
             document.getElementById('totalConvidados').textContent = filtrados.length;
@@ -869,12 +1024,17 @@
                 let badgeClass = 'badge-rsvp-talvez';
                 if (c.rsvp === 'Sim') badgeClass = 'badge-rsvp-sim';
                 if (c.rsvp === 'Não') badgeClass = 'badge-rsvp-nao';
+                let momentoClass = 'bg-gray-100 text-gray-700';
+                if (c.momento === 'Almoço') momentoClass = 'bg-rose-100 text-rose-700';
+                if (c.momento === 'Festa') momentoClass = 'bg-purple-100 text-purple-700';
+                if (c.momento === 'Ambos') momentoClass = 'bg-emerald-100 text-emerald-700';
                 return `
                 <tr class="hover:bg-rose-50/50 transition-colors">
                     <td class="py-3 px-4 text-sm font-medium text-gray-900">${escapeHtml(c.nome)}</td>
                     <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.acompanhante || '-')}</td>
                     <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.telefone || '-')}</td>
                     <td class="py-3 px-4"><span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${badgeClass}">${c.rsvp || 'Pendente'}</span></td>
+                    <td class="py-3 px-4"><span class="inline-flex px-2 py-1 rounded-full text-xs font-medium ${momentoClass}">${c.momento || 'Festa'}</span></td>
                     <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.alergias || '-')}</td>
                     <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.mesa || '-')}</td>
                     <td class="py-3 px-4 text-sm text-gray-600 max-w-[150px] truncate" title="${escapeHtml(c.obs)}">${escapeHtml(c.obs || '-')}</td>
@@ -907,6 +1067,7 @@
                 document.getElementById('convidadoAcompanhante').value = c.acompanhante;
                 document.getElementById('convidadoTelefone').value = c.telefone;
                 document.getElementById('convidadoRSVP').value = c.rsvp;
+                document.getElementById('convidadoMomento').value = c.momento || 'Festa';
                 document.getElementById('convidadoAlergias').value = c.alergias;
                 document.getElementById('convidadoMesa').value = c.mesa;
                 document.getElementById('convidadoObs').value = c.obs;
@@ -926,6 +1087,7 @@
                 acompanhante: document.getElementById('convidadoAcompanhante').value,
                 telefone: document.getElementById('convidadoTelefone').value,
                 rsvp: document.getElementById('convidadoRSVP').value,
+                momento: document.getElementById('convidadoMomento').value,
                 alergias: document.getElementById('convidadoAlergias').value,
                 mesa: document.getElementById('convidadoMesa').value,
                 obs: document.getElementById('convidadoObs').value,
@@ -939,6 +1101,7 @@
             fecharModal();
             renderizarConvidados();
             atualizarFiltroMesas();
+            atualizarContadoresMomento();
             salvarDados();
         }
 
@@ -948,6 +1111,7 @@
                 data.convidados = data.convidados.filter(c => c.id !== id);
                 renderizarConvidados();
                 atualizarFiltroMesas();
+                atualizarContadoresMomento();
                 salvarDados();
             }
         }
