@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planejamento Casamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        rose: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                        },
+                        gold: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-title { font-family: 'Playfair Display', serif; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .tab-active { border-bottom: 3px solid #e11d48; color: #e11d48; font-weight: 600; }
+        .tab-inactive { border-bottom: 3px solid transparent; color: #6b7280; }
+        .tab-inactive:hover { color: #374151; border-bottom-color: #d1d5db; }
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
+        .btn-primary { background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); }
+        .btn-primary:hover { background: linear-gradient(135deg, #be123c 0%, #9f1239 100%); transform: translateY(-1px); }
+        .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .btn-gold:hover { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); transform: translateY(-1px); }
+        .input-rose:focus { border-color: #fb7185; box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.1); }
+        .badge-rsvp-sim { background: #dcfce7; color: #166534; }
+        .badge-rsvp-nao { background: #fee2e2; color: #991b1b; }
+        .badge-rsvp-talvez { background: #fef3c7; color: #92400e; }
+        .priority-alta { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .priority-media { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .priority-baixa { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .kanban-col { min-height: 200px; }
+        .timeline-dot { width: 12px; height: 12px; background: #e11d48; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 3px #ffe4e6; }
+        .timeline-line { position: absolute; left: 5px; top: 24px; bottom: -24px; width: 2px; background: #fecdd3; }
+        .chart-container { position: relative; height: 200px; }
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+        /* Hide scrollbar for tab nav */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-rose-50 via-white to-gold-50 min-h-screen">
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-50 border-b border-rose-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500 to-gold-400 flex items-center justify-center text-white text-lg">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-title text-xl sm:text-2xl text-gray-900 leading-tight">
+                            Planejamento Casamento <span id="headerNoiva" class="text-rose-600">Joyce</span>
+                        </h1>
+                        <p class="text-xs text-gray-500 hidden sm:block">Organize cada detalhe do grande dia</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="editarNomeNoiva()" class="p-2 rounded-lg hover:bg-rose-50 text-rose-600 transition-colors" title="Editar nome">
+                        <i class="fas fa-pen text-sm"></i>
+                    </button>
+                    <button onclick="exportarJSON()" class="hidden sm:flex items-center space-x-2 px-3 py-2 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors text-sm font-medium">
+                        <i class="fas fa-download"></i>
+                        <span>Exportar</span>
+                    </button>
+                    <label class="hidden sm:flex items-center space-x-2 px-3 py-2 rounded-lg bg-gold-50 text-gold-700 hover:bg-gold-100 transition-colors text-sm font-medium cursor-pointer">
+                        <i class="fas fa-upload"></i>
+                        <span>Importar</span>
+                        <input type="file" id="importFile" class="hidden" accept=".json" onchange="importarJSON(this)">
+                    </label>
+                    <!-- Mobile menu button for export/import -->
+                    <div class="sm:hidden relative">
+                        <button onclick="toggleMobileMenu()" class="p-2 rounded-lg hover:bg-rose-50 text-gray-600">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div id="mobileMenu" class="hidden absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+                            <button onclick="exportarJSON(); toggleMobileMenu()" class="w-full text-left px-4 py-2 hover:bg-rose-50 text-rose-700 text-sm">
+                                <i class="fas fa-download mr-2"></i>Exportar JSON
+                            </button>
+                            <label class="block w-full text-left px-4 py-2 hover:bg-gold-50 text-gold-700 text-sm cursor-pointer">
+                                <i class="fas fa-upload mr-2"></i>Importar JSON
+                                <input type="file" class="hidden" accept=".json" onchange="importarJSON(this); toggleMobileMenu()">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="border-t border-rose-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-1 overflow-x-auto no-scrollbar" id="tabNav">
+                    <button onclick="switchTab('convidados')" class="tab-btn tab-active px-4 py-3 text-sm whitespace-nowrap transition-all flex items-center space-x-2" data-tab="convidados">
+                        <i class="fas fa-users"></i>
+                        <span>Convidados</span>
+                    </button>
+                    <button onclick="switchTab('orcamento')" class="tab-btn tab-inactive px-4 py-3 text-sm whitespace-nowrap transition-all flex items-center space-x-2" data-tab="orcamento">
+                        <i class="fas fa-wallet"></i>
+                        <span>Orçamento</span>
+                    </button>
+                    <button onclick="switchTab('tarefas')" class="tab-btn tab-inactive px-4 py-3 text-sm whitespace-nowrap transition-all flex items-center space-x-2" data-tab="tarefas">
+                        <i class="fas fa-tasks"></i>
+                        <span>Tarefas</span>
+                    </button>
+                    <button onclick="switchTab('fornecedores')" class="tab-btn tab-inactive px-4 py-3 text-sm whitespace-nowrap transition-all flex items-center space-x-2" data-tab="fornecedores">
+                        <i class="fas fa-handshake"></i>
+                        <span>Fornecedores</span>
+                    </button>
+                    <button onclick="switchTab('cronograma')" class="tab-btn tab-inactive px-4 py-3 text-sm whitespace-nowrap transition-all flex items-center space-x-2" data-tab="cronograma">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Cronograma</span>
+                    </button>
+                    <button onclick="switchTab('notas')" class="tab-btn tab-inactive px-4 py-3 text-sm whitespace-nowrap transition-all flex items-center space-x-2" data-tab="notas">
+                        <i class="fas fa-sticky-note"></i>
+                        <span>Notas</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ==================== CONVIDADOS ==================== -->
+        <div id="tab-convidados" class="tab-content animate-fade-in">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">Lista de Convidados</h2>
+                        <p class="text-sm text-gray-500 mt-1"><span id="totalConvidados">0</span> convidados cadastrados</p>
+                    </div>
+                    <button onclick="abrirModalConvidado()" class="btn-primary text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-center space-x-2 shadow-lg shadow-rose-200">
+                        <i class="fas fa-plus"></i>
+                        <span>Adicionar Convidado</span>
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                    <div class="relative flex-1">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="buscaConvidado" placeholder="Buscar por nome..."
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm"
+                            oninput="filtrarConvidados()">
+                    </div>
+                    <select id="filtroRSVP" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
+                        <option value="">Todos RSVP</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                        <option value="Talvez">Talvez</option>
+                    </select>
+                    <select id="filtroMesa" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
+                        <option value="">Todas Mesas</option>
+                    </select>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto -mx-4 sm:mx-0">
+                    <table class="w-full min-w-[800px]">
+                        <thead>
+                            <tr class="border-b border-gray-100">
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Acompanhante</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Telefone</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">RSVP</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Alergias</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Mesa</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Observações</th>
+                                <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaConvidados" class="divide-y divide-gray-50">
+                            <!-- JS populates this -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="semConvidados" class="hidden text-center py-12 text-gray-400">
+                    <i class="fas fa-users text-4xl mb-3 text-rose-200"></i>
+                    <p>Nenhum convidado cadastrado ainda.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ORÇAMENTO ==================== -->
+        <div id="tab-orcamento" class="tab-content hidden animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Summary Cards -->
+                <div class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-xl card-shadow p-5 border-l-4 border-rose-400">
+                        <p class="text-sm text-gray-500 mb-1">Total Estimado</p>
+                        <p class="text-2xl font-bold text-gray-900" id="totalEstimado">R$ 0,00</p>
+                    </div>
+                    <div class="bg-white rounded-xl card-shadow p-5 border-l-4 border-gold-400">
+                        <p class="text-sm text-gray-500 mb-1">Total Real</p>
+                        <p class="text-2xl font-bold text-gray-900" id="totalReal">R$ 0,00</p>
+                    </div>
+                    <div class="bg-white rounded-xl card-shadow p-5 border-l-4 border-emerald-400">
+                        <p class="text-sm text-gray-500 mb-1">Diferença</p>
+                        <p class="text-2xl font-bold" id="totalDiferenca">R$ 0,00</p>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="bg-white rounded-xl card-shadow p-5">
+                    <h3 class="font-semibold text-gray-900 mb-4">Por Categoria</h3>
+                    <div class="chart-container flex items-center justify-center">
+                        <canvas id="pieChart" width="200" height="200"></canvas>
+                    </div>
+                    <div id="pieLegend" class="mt-4 space-y-2 text-sm"></div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="lg:col-span-2 bg-white rounded-xl card-shadow p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+                        <h3 class="font-semibold text-gray-900">Itens do Orçamento</h3>
+                        <button onclick="abrirModalOrcamento()" class="btn-gold text-white px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 shadow-lg shadow-gold-100">
+                            <i class="fas fa-plus"></i>
+                            <span>Adicionar Item</span>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto -mx-4 sm:mx-0">
+                        <table class="w-full min-w-[600px]">
+                            <thead>
+                                <tr class="border-b border-gray-100">
+                                    <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Item</th>
+                                    <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Categoria</th>
+                                    <th class="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Estimado</th>
+                                    <th class="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Real</th>
+                                    <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                                    <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaOrcamento" class="divide-y divide-gray-50"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAREFAS ==================== -->
+        <div id="tab-tarefas" class="tab-content hidden animate-fade-in">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">Tarefas</h2>
+                <button onclick="abrirModalTarefa()" class="btn-primary text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 shadow-lg shadow-rose-200">
+                    <i class="fas fa-plus"></i>
+                    <span>Nova Tarefa</span>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- A Fazer -->
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-semibold text-gray-700 flex items-center space-x-2">
+                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                            <span>A Fazer</span>
+                        </h3>
+                        <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full" id="countAfazer">0</span>
+                    </div>
+                    <div id="colunaAfazer" class="kanban-col space-y-3"></div>
+                </div>
+                <!-- Em Andamento -->
+                <div class="bg-gold-50 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-semibold text-gray-700 flex items-center space-x-2">
+                            <span class="w-2 h-2 rounded-full bg-gold-500"></span>
+                            <span>Em Andamento</span>
+                        </h3>
+                        <span class="text-xs bg-gold-200 text-gold-700 px-2 py-1 rounded-full" id="countAndamento">0</span>
+                    </div>
+                    <div id="colunaAndamento" class="kanban-col space-y-3"></div>
+                </div>
+                <!-- Feito -->
+                <div class="bg-emerald-50 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-semibold text-gray-700 flex items-center space-x-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span>Feito</span>
+                        </h3>
+                        <span class="text-xs bg-emerald-200 text-emerald-700 px-2 py-1 rounded-full" id="countFeito">0</span>
+                    </div>
+                    <div id="colunaFeito" class="kanban-col space-y-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== FORNECEDORES ==================== -->
+        <div id="tab-fornecedores" class="tab-content hidden animate-fade-in">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">Fornecedores</h2>
+                        <p class="text-sm text-gray-500 mt-1">Gerencie todos os prestadores de serviço</p>
+                    </div>
+                    <button onclick="abrirModalFornecedor()" class="btn-primary text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-center space-x-2 shadow-lg shadow-rose-200">
+                        <i class="fas fa-plus"></i>
+                        <span>Adicionar Fornecedor</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto -mx-4 sm:mx-0">
+                    <table class="w-full min-w-[700px]">
+                        <thead>
+                            <tr class="border-b border-gray-100">
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Nome</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Tipo</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Contato</th>
+                                <th class="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Valor</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Link</th>
+                                <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaFornecedores" class="divide-y divide-gray-50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== CRONOGRAMA ==================== -->
+        <div id="tab-cronograma" class="tab-content hidden animate-fade-in">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">Cronograma</h2>
+                        <p class="text-sm text-gray-500 mt-1">Datas importantes do planejamento</p>
+                    </div>
+                    <button onclick="abrirModalCronograma()" class="btn-primary text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-center space-x-2 shadow-lg shadow-rose-200">
+                        <i class="fas fa-plus"></i>
+                        <span>Adicionar Data</span>
+                    </button>
+                </div>
+                <div id="timeline" class="space-y-0">
+                    <!-- JS populates -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== NOTAS ==================== -->
+        <div id="tab-notas" class="tab-content hidden animate-fade-in">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-900">Notas Gerais</h2>
+                    <span class="text-xs text-gray-400">Salvo automaticamente</span>
+                </div>
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="bg-gray-50 border-b border-gray-200 p-2 flex flex-wrap items-center gap-1">
+                        <button onclick="formatarNota('bold')" class="p-1.5 rounded hover:bg-gray-200 text-gray-600" title="Negrito"><i class="fas fa-bold"></i></button>
+                        <button onclick="formatarNota('italic')" class="p-1.5 rounded hover:bg-gray-200 text-gray-600" title="Itálico"><i class="fas fa-italic"></i></button>
+                        <button onclick="formatarNota('underline')" class="p-1.5 rounded hover:bg-gray-200 text-gray-600" title="Sublinhado"><i class="fas fa-underline"></i></button>
+                        <div class="w-px h-5 bg-gray-300 mx-1"></div>
+                        <button onclick="formatarNota('insertUnorderedList')" class="p-1.5 rounded hover:bg-gray-200 text-gray-600" title="Lista"><i class="fas fa-list-ul"></i></button>
+                        <button onclick="formatarNota('insertOrderedList')" class="p-1.5 rounded hover:bg-gray-200 text-gray-600" title="Lista numerada"><i class="fas fa-list-ol"></i></button>
+                        <div class="w-px h-5 bg-gray-300 mx-1"></div>
+                        <select onchange="formatarNota('formatBlock', this.value); this.value=''" class="text-xs bg-white border border-gray-200 rounded px-2 py-1">
+                            <option value="">Título</option>
+                            <option value="H1">H1</option>
+                            <option value="H2">H2</option>
+                            <option value="H3">H3</option>
+                            <option value="P">Texto</option>
+                        </select>
+                    </div>
+                    <div id="editorNotas" contenteditable="true"
+                        class="w-full min-h-[400px] p-4 focus:outline-none text-gray-700 leading-relaxed"
+                        oninput="salvarNotas()"
+                        style="font-family: Inter, sans-serif; font-size: 15px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ==================== MODAIS ==================== -->
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+
+        <!-- Modal Convidado -->
+        <div id="modalConvidado" class="modal hidden bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4" id="tituloModalConvidado">Adicionar Convidado</h3>
+                <form onsubmit="salvarConvidado(event)" class="space-y-4">
+                    <input type="hidden" id="convidadoId">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                        <input type="text" id="convidadoNome" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Acompanhante</label>
+                        <input type="text" id="convidadoAcompanhante" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                        <input type="tel" id="convidadoTelefone" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">RSVP</label>
+                            <select id="convidadoRSVP" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                                <option value="">Selecione</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                                <option value="Talvez">Talvez</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mesa</label>
+                            <input type="text" id="convidadoMesa" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Alergias / Restrições</label>
+                        <input type="text" id="convidadoAlergias" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+                        <textarea id="convidadoObs" rows="2" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose resize-none"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" onclick="fecharModal()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">Cancelar</button>
+                        <button type="submit" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Orçamento -->
+        <div id="modalOrcamento" class="modal hidden bg-white rounded-xl shadow-2xl w-full max-w-lg">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4" id="tituloModalOrcamento">Adicionar Item</h3>
+                <form onsubmit="salvarOrcamento(event)" class="space-y-4">
+                    <input type="hidden" id="orcamentoId">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Item</label>
+                        <input type="text" id="orcamentoItem" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+                        <select id="orcamentoCategoria" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                            <option value="Buffet">Buffet</option>
+                            <option value="Bebidas">Bebidas</option>
+                            <option value="Decoração">Decoração</option>
+                            <option value="Fotografia">Fotografia</option>
+                            <option value="Vídeo">Vídeo</option>
+                            <option value="Música">Música / Banda / DJ</option>
+                            <option value="Igreja/Cerimonial">Igreja / Cerimonial</option>
+                            <option value="Buffet">Buffet</option>
+                            <option value="Vestido/Traje">Vestido / Traje</option>
+                            <option value="Beleza">Beleza (Cabelo/Maquiagem)</option>
+                            <option value="Convites">Convites</option>
+                            <option value="Lua de Mel">Lua de Mel</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Valor Estimado (R$)</label>
+                            <input type="number" id="orcamentoEstimado" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Valor Real (R$)</label>
+                            <input type="number" id="orcamentoReal" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select id="orcamentoStatus" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                            <option value="Pendente">Pendente</option>
+                            <option value="Pago">Pago</option>
+                            <option value="Parcial">Parcial</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" onclick="fecharModal()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">Cancelar</button>
+                        <button type="submit" class="btn-gold text-white px-4 py-2 rounded-lg text-sm font-medium">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Tarefa -->
+        <div id="modalTarefa" class="modal hidden bg-white rounded-xl shadow-2xl w-full max-w-lg">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4" id="tituloModalTarefa">Nova Tarefa</h3>
+                <form onsubmit="salvarTarefa(event)" class="space-y-4">
+                    <input type="hidden" id="tarefaId">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tarefa</label>
+                        <input type="text" id="tarefaTitulo" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Responsável</label>
+                            <input type="text" id="tarefaResponsavel" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Prazo</label>
+                            <input type="date" id="tarefaPrazo" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select id="tarefaStatus" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                                <option value="A fazer">A fazer</option>
+                                <option value="Em andamento">Em andamento</option>
+                                <option value="Feito">Feito</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Prioridade</label>
+                            <select id="tarefaPrioridade" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                                <option value="Alta">Alta</option>
+                                <option value="Média">Média</option>
+                                <option value="Baixa">Baixa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" onclick="fecharModal()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">Cancelar</button>
+                        <button type="submit" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Fornecedor -->
+        <div id="modalFornecedor" class="modal hidden bg-white rounded-xl shadow-2xl w-full max-w-lg">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4" id="tituloModalFornecedor">Adicionar Fornecedor</h3>
+                <form onsubmit="salvarFornecedor(event)" class="space-y-4">
+                    <input type="hidden" id="fornecedorId">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                        <input type="text" id="fornecedorNome" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                            <select id="fornecedorTipo" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                                <option value="Buffet">Buffet</option>
+                                <option value="Fotografia">Fotografia</option>
+                                <option value="Decoração">Decoração</option>
+                                <option value="Música">Música</option>
+                                <option value="Cerimonial">Cerimonial</option>
+                                <option value="Vestido">Vestido</option>
+                                <option value="Beleza">Beleza</option>
+                                <option value="Convites">Convites</option>
+                                <option value="Transporte">Transporte</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Valor (R$)</label>
+                            <input type="number" id="fornecedorValor" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contato</label>
+                        <input type="text" id="fornecedorContato" placeholder="Telefone, email ou WhatsApp" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Link / Site</label>
+                        <input type="url" id="fornecedorLink" placeholder="https://..." class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select id="fornecedorStatus" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                            <option value="Em contato">Em contato</option>
+                            <option value="Orçamento solicitado">Orçamento solicitado</option>
+                            <option value="Contratado">Contratado</option>
+                            <option value="Pago">Pago</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" onclick="fecharModal()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">Cancelar</button>
+                        <button type="submit" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Cronograma -->
+        <div id="modalCronograma" class="modal hidden bg-white rounded-xl shadow-2xl w-full max-w-lg">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4" id="tituloModalCronograma">Adicionar Data</h3>
+                <form onsubmit="salvarCronograma(event)" class="space-y-4">
+                    <input type="hidden" id="cronogramaId">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Evento</label>
+                        <input type="text" id="cronogramaEvento" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Data</label>
+                            <input type="date" id="cronogramaData" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Horário (opcional)</label>
+                            <input type="time" id="cronogramaHora" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Descrição / Detalhes</label>
+                        <textarea id="cronogramaDesc" rows="3" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose resize-none"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" onclick="fecharModal()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">Cancelar</button>
+                        <button type="submit" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Nome Noiva -->
+        <div id="modalNoiva" class="modal hidden bg-white rounded-xl shadow-2xl w-full max-w-sm">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Personalizar Título</h3>
+                <form onsubmit="salvarNomeNoiva(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Noiva</label>
+                        <input type="text" id="inputNomeNoiva" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" onclick="fecharModal()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">Cancelar</button>
+                        <button type="submit" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
+        <i class="fas fa-check-circle text-emerald-400"></i>
+        <span id="toastMsg">Salvo!</span>
+    </div>
+
+    <script>
+        // ==================== DATA STORE ====================
+        const STORAGE_KEY = 'casamentoDashboard_v1';
+        let data = {
+            noiva: 'Joyce',
+            convidados: [
+                // Confirmados (Sim)
+                { id: 1, nome: 'Joyce Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Noiva' },
+                { id: 2, nome: 'Renato Pedra', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
+                { id: 3, nome: 'Denise Pedra de Souza', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
+                { id: 4, nome: 'Edson', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
+                { id: 5, nome: 'Ana Cristina', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
+                { id: 6, nome: 'Roberto Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
+                { id: 7, nome: 'Jean Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
+                { id: 8, nome: 'Jefferson Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '1', obs: 'Adulto' },
+                { id: 9, nome: 'Tatiane Silva', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '2', obs: 'Adulto' },
+                { id: 10, nome: 'Rayane Macêdo', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '2', obs: 'Adulto' },
+                { id: 11, nome: 'Elis Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '2', obs: 'Criança Pagante' },
+                { id: 12, nome: 'Mariana Lourenço', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '2', obs: 'Criança Pagante' },
+                { id: 13, nome: 'Marcia Regina', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '3', obs: 'Adulto' },
+                { id: 14, nome: 'Jorcely Borges da Silva', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '3', obs: 'Adulto' },
+                { id: 15, nome: 'Marcia Nina', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '3', obs: 'Adulto' },
+                { id: 16, nome: 'Jorge Miguel', acompanhante: '', telefone: '', rsvp: 'Sim', alergias: '', mesa: '3', obs: 'Adulto' },
+                // Pendentes
+                { id: 17, nome: 'Edna', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '4', obs: 'Adulto' },
+                { id: 18, nome: 'Daniel Ramos', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '4', obs: 'Adulto' },
+                { id: 19, nome: 'Yago', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '4', obs: 'Adulto' },
+                { id: 20, nome: 'Kaíque', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '4', obs: 'Adulto' },
+                { id: 21, nome: 'Erick', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '5', obs: 'Criança Pagante' },
+                { id: 22, nome: 'Cauã', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '5', obs: 'Criança Pagante' },
+                { id: 23, nome: 'Jurema', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '5', obs: 'Adulto' },
+                { id: 24, nome: 'Maycon', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '5', obs: 'Adulto' },
+                { id: 25, nome: 'Nando', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '5', obs: 'Adulto' },
+                { id: 26, nome: 'Esposa Nando', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '6', obs: 'Adulto' },
+                { id: 27, nome: 'Nathalia Lourenço', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '6', obs: 'Adulto' },
+                { id: 28, nome: 'Letícia Lourenço', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '6', obs: 'Criança Pagante' },
+                { id: 29, nome: 'Mara', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '6', obs: 'Adulto' },
+                { id: 30, nome: 'Robson', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '6', obs: 'Adulto' },
+                { id: 31, nome: 'Juçara', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '7', obs: 'Adulto' },
+                { id: 32, nome: 'Isabella Maria Oliveira dos Santos', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '7', obs: 'Adulto' },
+                { id: 33, nome: 'Danielle Isabela', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '7', obs: 'Adulto' },
+                { id: 34, nome: 'Luciene', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '7', obs: 'Adulto' },
+                { id: 35, nome: 'Marquinhos', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '7', obs: 'Adulto' },
+                { id: 36, nome: 'Thayane Procession', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '8', obs: 'Adulto' },
+                { id: 37, nome: 'Felipe Silva', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '8', obs: 'Adulto' },
+                { id: 38, nome: 'Elane (Alessandre)', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '8', obs: 'Adulto' },
+                { id: 39, nome: 'Alessandre', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '8', obs: 'Adulto' },
+                { id: 40, nome: 'Leandro Lourenço', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '8', obs: 'Adulto' },
+                { id: 41, nome: 'Jessica Lucio', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '9', obs: 'Adulto' },
+                { id: 42, nome: 'Renan Querino', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '9', obs: 'Adulto' },
+                { id: 43, nome: 'Tainara Souza', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '9', obs: 'Adulto' },
+                { id: 44, nome: 'Mariana Machado', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '9', obs: 'Adulto' },
+                { id: 45, nome: 'Vitor Henrique', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '9', obs: 'Adulto' },
+                { id: 46, nome: 'Rayane Cristina', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '10', obs: 'Adulto' },
+                { id: 47, nome: 'Thales', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '10', obs: 'Adulto' },
+                { id: 48, nome: 'Karina Teixeira', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '10', obs: 'Adulto' },
+                { id: 49, nome: 'Mary Arvelos', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '10', obs: 'Adulto' },
+                { id: 50, nome: 'Leticia Fernandes', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '10', obs: 'Adulto' },
+                { id: 51, nome: 'Marcelinho', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '11', obs: 'Adulto' },
+                { id: 52, nome: 'Lucas Santana (Primo)', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '11', obs: 'Adulto' },
+                { id: 53, nome: 'Vitor Primo', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '11', obs: 'Adulto' },
+                { id: 54, nome: 'Bucha', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '11', obs: 'Adulto' },
+                { id: 55, nome: 'Vida', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '11', obs: 'Adulto' },
+                { id: 56, nome: 'Mires', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '12', obs: 'Adulto' },
+                { id: 57, nome: 'Leandro Mires', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '12', obs: 'Adulto' },
+                { id: 58, nome: 'Leandro', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '12', obs: 'Adulto' },
+                { id: 59, nome: 'Pamela', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '12', obs: 'Adulto' },
+                { id: 60, nome: 'Bia', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '12', obs: 'Adulto' },
+                { id: 61, nome: 'Gabi', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '13', obs: 'Adulto' },
+                { id: 62, nome: 'Filipe Ramos Braga Salgueiro', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '13', obs: 'Adulto' },
+                { id: 63, nome: 'Luiza Paes', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '13', obs: 'Adulto' },
+                { id: 64, nome: 'Rato', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '13', obs: 'Adulto' },
+                { id: 65, nome: 'Caveira', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '14', obs: 'Adulto' },
+                { id: 66, nome: 'Siri', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '14', obs: 'Adulto' },
+                { id: 67, nome: 'Chokito', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '14', obs: 'Adulto' },
+                { id: 68, nome: 'Serginho', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '14', obs: 'Adulto' },
+                { id: 69, nome: 'Leleo', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '14', obs: 'Adulto' },
+                { id: 70, nome: 'Gustavinho', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '15', obs: 'Adulto' },
+                { id: 71, nome: 'Kesse', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '15', obs: 'Adulto' },
+                { id: 72, nome: 'Higor', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '15', obs: 'Adulto' },
+                { id: 73, nome: 'JV', acompanhante: '', telefone: '', rsvp: '', alergias: '', mesa: '15', obs: 'Adulto' },
+            ],
+            orcamento: [
+                { id: 1, item: 'Salão Tubarão (10h da manhã até 22:30)', categoria: 'Buffet', estimado: 450, real: 450, status: 'Pago' },
+                { id: 2, item: 'Decoração', categoria: 'Decoração', estimado: 450, real: 450, status: 'Pago' },
+                { id: 3, item: 'Churrasco', categoria: 'Buffet', estimado: 1000, real: 1000, status: 'Pago' },
+                { id: 4, item: 'Guarnição: Arroz, maionese, molho, farofa', categoria: 'Buffet', estimado: 200, real: 200, status: 'Pago' },
+                { id: 5, item: 'Salgadinho', categoria: 'Buffet', estimado: 350, real: 350, status: 'Pago' },
+                { id: 6, item: 'Tira gosto: Salame, azeitona, ovo de codorna', categoria: 'Buffet', estimado: 200, real: 200, status: 'Pago' },
+                { id: 7, item: 'Churrasqueiro', categoria: 'Outros', estimado: 150, real: 150, status: 'Pago' },
+                { id: 8, item: 'Chopp', categoria: 'Bebidas', estimado: 600, real: 600, status: 'Pago' },
+                { id: 9, item: 'Refrigerante + água (43 L)', categoria: 'Bebidas', estimado: 250, real: 250, status: 'Pago' },
+                { id: 10, item: 'Bolo', categoria: 'Outros', estimado: 300, real: 300, status: 'Pago' },
+                { id: 11, item: 'Doces', categoria: 'Outros', estimado: 250, real: 250, status: 'Pago' },
+                { id: 12, item: 'Lembrancinha simples / centro de mesa', categoria: 'Outros', estimado: 150, real: 150, status: 'Pago' },
+                { id: 13, item: 'Maquiagem + cabelo', categoria: 'Beleza', estimado: 0, real: 0, status: 'Pendente' },
+                { id: 14, item: 'Cartório', categoria: 'Outros', estimado: 2000, real: 2000, status: 'Pago' },
+                { id: 15, item: 'Buquê', categoria: 'Outros', estimado: 0, real: 0, status: 'Pendente' },
+                { id: 16, item: 'Vestido', categoria: 'Vestido/Traje', estimado: 0, real: 0, status: 'Pendente' },
+            ],
+            tarefas: [
+                { id: 1, titulo: 'Confirmar lista de 73 convidados', responsavel: 'Joyce', prazo: '2025-06-01', status: 'Em andamento', prioridade: 'Alta' },
+                { id: 2, titulo: 'Reservar Salão Tubarão', responsavel: 'Noivo', prazo: '2025-06-10', status: 'Feito', prioridade: 'Alta' },
+                { id: 3, titulo: 'Contratar churrasqueiro', responsavel: 'Joyce', prazo: '2025-06-12', status: 'Feito', prioridade: 'Alta' },
+                { id: 4, titulo: 'Confirmar decoração', responsavel: 'Joyce', prazo: '2025-06-10', status: 'Feito', prioridade: 'Alta' },
+                { id: 5, titulo: 'Comprar carnes para churrasco', responsavel: 'Noivo', prazo: '2025-06-14', status: 'A fazer', prioridade: 'Alta' },
+                { id: 6, titulo: 'Comprar bebidas (chopp, refrigerante, água)', responsavel: 'Joyce', prazo: '2025-06-14', status: 'A fazer', prioridade: 'Média' },
+                { id: 7, titulo: 'Preparar doces e bolo', responsavel: 'Mãe da noiva', prazo: '2025-06-15', status: 'A fazer', prioridade: 'Média' },
+                { id: 8, titulo: 'Agendar maquiagem e cabelo', responsavel: 'Joyce', prazo: '2025-06-13', status: 'A fazer', prioridade: 'Média' },
+                { id: 9, titulo: 'Comprar vestido e buquê', responsavel: 'Joyce', prazo: '2025-06-10', status: 'A fazer', prioridade: 'Média' },
+                { id: 10, titulo: 'Comprar lembrancinhas / centro de mesa', responsavel: 'Joyce', prazo: '2025-06-14', status: 'Feito', prioridade: 'Baixa' },
+            ],
+            fornecedores: [
+                { id: 1, nome: 'Salão Tubarão', tipo: 'Buffet', contato: '', valor: 450, status: 'Pago', link: '' },
+                { id: 2, nome: 'Decorador(a)', tipo: 'Decoração', contato: '', valor: 450, status: 'Pago', link: '' },
+                { id: 3, nome: 'Açougue / Fornecedor de Churrasco', tipo: 'Buffet', contato: '', valor: 1000, status: 'Pago', link: '' },
+                { id: 4, nome: 'Churrasqueiro', tipo: 'Buffet', contato: '', valor: 150, status: 'Pago', link: '' },
+                { id: 5, nome: 'Fornecedor de Chopp', tipo: 'Bebidas', contato: '', valor: 600, status: 'Pago', link: '' },
+                { id: 6, nome: 'Salgadeiro', tipo: 'Buffet', contato: '', valor: 350, status: 'Pago', link: '' },
+                { id: 7, nome: 'Confeiteiro(a)', tipo: 'Buffet', contato: '', valor: 550, status: 'Pago', link: '' },
+                { id: 8, nome: 'Cartório', tipo: 'Cerimonial', contato: '', valor: 2000, status: 'Pago', link: '' },
+            ],
+            cronograma: [
+                { id: 1, evento: 'Casamento - Churrasco', data: '2025-06-15', hora: '10:00', desc: 'Salão Tubarão das 10h da manhã até 22:30 da noite. Churrasco completo com 73 convidados.' },
+                { id: 2, evento: 'Compras de carnes e bebidas', data: '2025-06-14', hora: '09:00', desc: 'Ir no açougue e mercado para comprar tudo do evento.' },
+                { id: 3, evento: 'Preparativos finais', data: '2025-06-15', hora: '08:00', desc: 'Montar decoração, preparar mesa e receber equipe no Salão Tubarão.' },
+            ],
+            notas: '<h2>Casamento Joyce & Renato - Churrasco</h2><ul><li><strong>Local:</strong> Salão Tubarão (10h às 22:30)</li><li><strong>Convidados:</strong> 73 pessoas (68 adultos + 5 crianças pagantes)</li><li><strong>Carnes:</strong> Churrasco completo</li><li><strong>Guarnição:</strong> Arroz, maionese, molho, farofa</li><li><strong>Bebidas:</strong> Chopp, refrigerante + água (43 L)</li><li><strong>Extras:</strong> Salgadinho, tira gosto, bolo, doces, lembrancinhas</li><li><strong>Pessoal:</strong> Churrasqueiro contratado</li></ul><p><br></p><h2>Totais</h2><ul><li>Total sem cartório e gasto pessoal: <strong>R$ 4.350,00</strong></li><li>Total geral (com cartório): <strong>R$ 6.350,00</strong></li></ul><p><br></p><h2>Pendentes</h2><ul><li>Maquiagem + cabelo</li><li>Buquê</li><li>Vestido</li></ul>'
+        };
+
+        // ==================== INIT ====================
+        function init() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    data = { ...data, ...parsed };
+                } catch (e) { console.error('Erro ao carregar dados', e); }
+            }
+            atualizarUI();
+        }
+
+        function salvarDados() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            mostrarToast('Dados salvos!');
+        }
+
+        function atualizarUI() {
+            document.getElementById('headerNoiva').textContent = data.noiva;
+            renderizarConvidados();
+            renderizarOrcamento();
+            renderizarTarefas();
+            renderizarFornecedores();
+            renderizarCronograma();
+            document.getElementById('editorNotas').innerHTML = data.notas || '';
+            atualizarFiltroMesas();
+        }
+
+        // ==================== TABS ====================
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.remove('tab-inactive');
+                    btn.classList.add('tab-active');
+                } else {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('tab-inactive');
+                }
+            });
+        }
+
+        // ==================== CONVIDADOS ====================
+        function renderizarConvidados() {
+            const tbody = document.getElementById('tabelaConvidados');
+            const busca = document.getElementById('buscaConvidado').value.toLowerCase();
+            const filtroRSVP = document.getElementById('filtroRSVP').value;
+            const filtroMesa = document.getElementById('filtroMesa').value;
+
+            let filtrados = data.convidados.filter(c => {
+                const matchBusca = !busca || c.nome.toLowerCase().includes(busca) || (c.acompanhante && c.acompanhante.toLowerCase().includes(busca));
+                const matchRSVP = !filtroRSVP || c.rsvp === filtroRSVP;
+                const matchMesa = !filtroMesa || c.mesa === filtroMesa;
+                return matchBusca && matchRSVP && matchMesa;
+            });
+
+            document.getElementById('totalConvidados').textContent = filtrados.length;
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '';
+                document.getElementById('semConvidados').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('semConvidados').classList.add('hidden');
+
+            tbody.innerHTML = filtrados.map(c => {
+                let badgeClass = 'badge-rsvp-talvez';
+                if (c.rsvp === 'Sim') badgeClass = 'badge-rsvp-sim';
+                if (c.rsvp === 'Não') badgeClass = 'badge-rsvp-nao';
+                return `
+                <tr class="hover:bg-rose-50/50 transition-colors">
+                    <td class="py-3 px-4 text-sm font-medium text-gray-900">${escapeHtml(c.nome)}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.acompanhante || '-')}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.telefone || '-')}</td>
+                    <td class="py-3 px-4"><span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${badgeClass}">${c.rsvp || 'Pendente'}</span></td>
+                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.alergias || '-')}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(c.mesa || '-')}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600 max-w-[150px] truncate" title="${escapeHtml(c.obs)}">${escapeHtml(c.obs || '-')}</td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="editarConvidado(${c.id})" class="text-rose-600 hover:text-rose-800 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="excluirConvidado(${c.id})" class="text-gray-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function atualizarFiltroMesas() {
+            const mesas = [...new Set(data.convidados.map(c => c.mesa).filter(Boolean))].sort();
+            const select = document.getElementById('filtroMesa');
+            const valAtual = select.value;
+            select.innerHTML = '<option value="">Todas Mesas</option>' + mesas.map(m => `<option value="${m}">Mesa ${m}</option>`).join('');
+            select.value = valAtual;
+        }
+
+        function filtrarConvidados() { renderizarConvidados(); }
+
+        function abrirModalConvidado(id = null) {
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            document.getElementById('modalConvidado').classList.remove('hidden');
+            if (id) {
+                const c = data.convidados.find(x => x.id === id);
+                document.getElementById('tituloModalConvidado').textContent = 'Editar Convidado';
+                document.getElementById('convidadoId').value = c.id;
+                document.getElementById('convidadoNome').value = c.nome;
+                document.getElementById('convidadoAcompanhante').value = c.acompanhante;
+                document.getElementById('convidadoTelefone').value = c.telefone;
+                document.getElementById('convidadoRSVP').value = c.rsvp;
+                document.getElementById('convidadoAlergias').value = c.alergias;
+                document.getElementById('convidadoMesa').value = c.mesa;
+                document.getElementById('convidadoObs').value = c.obs;
+            } else {
+                document.getElementById('tituloModalConvidado').textContent = 'Adicionar Convidado';
+                document.getElementById('convidadoId').value = '';
+                document.getElementById('modalConvidado').querySelector('form').reset();
+            }
+        }
+
+        function salvarConvidado(e) {
+            e.preventDefault();
+            const id = document.getElementById('convidadoId').value;
+            const obj = {
+                id: id ? parseInt(id) : Date.now(),
+                nome: document.getElementById('convidadoNome').value,
+                acompanhante: document.getElementById('convidadoAcompanhante').value,
+                telefone: document.getElementById('convidadoTelefone').value,
+                rsvp: document.getElementById('convidadoRSVP').value,
+                alergias: document.getElementById('convidadoAlergias').value,
+                mesa: document.getElementById('convidadoMesa').value,
+                obs: document.getElementById('convidadoObs').value,
+            };
+            if (id) {
+                const idx = data.convidados.findIndex(c => c.id === parseInt(id));
+                data.convidados[idx] = obj;
+            } else {
+                data.convidados.push(obj);
+            }
+            fecharModal();
+            renderizarConvidados();
+            atualizarFiltroMesas();
+            salvarDados();
+        }
+
+        function editarConvidado(id) { abrirModalConvidado(id); }
+        function excluirConvidado(id) {
+            if (confirm('Excluir convidado?')) {
+                data.convidados = data.convidados.filter(c => c.id !== id);
+                renderizarConvidados();
+                atualizarFiltroMesas();
+                salvarDados();
+            }
+        }
+
+        // ==================== ORÇAMENTO ====================
+        function renderizarOrcamento() {
+            const tbody = document.getElementById('tabelaOrcamento');
+            tbody.innerHTML = data.orcamento.map(o => {
+                const statusClass = o.status === 'Pago' ? 'bg-emerald-100 text-emerald-700' : o.status === 'Parcial' ? 'bg-gold-100 text-gold-700' : 'bg-gray-100 text-gray-700';
+                return `
+                <tr class="hover:bg-gold-50/50 transition-colors">
+                    <td class="py-3 px-4 text-sm font-medium text-gray-900">${escapeHtml(o.item)}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(o.categoria)}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600 text-right">R$ ${formatarMoeda(o.estimado)}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600 text-right">R$ ${formatarMoeda(o.real)}</td>
+                    <td class="py-3 px-4"><span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${statusClass}">${o.status}</span></td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="editarOrcamento(${o.id})" class="text-gold-600 hover:text-gold-800 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="excluirOrcamento(${o.id})" class="text-gray-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            const totalEst = data.orcamento.reduce((a, o) => a + (parseFloat(o.estimado) || 0), 0);
+            const totalReal = data.orcamento.reduce((a, o) => a + (parseFloat(o.real) || 0), 0);
+            const diff = totalEst - totalReal;
+            document.getElementById('totalEstimado').textContent = 'R$ ' + formatarMoeda(totalEst);
+            document.getElementById('totalReal').textContent = 'R$ ' + formatarMoeda(totalReal);
+            const diffEl = document.getElementById('totalDiferenca');
+            diffEl.textContent = (diff >= 0 ? 'R$ ' : '-R$ ') + formatarMoeda(Math.abs(diff));
+            diffEl.className = 'text-2xl font-bold ' + (diff >= 0 ? 'text-emerald-600' : 'text-rose-600');
+
+            renderizarGraficoPizza();
+        }
+
+        function renderizarGraficoPizza() {
+            const canvas = document.getElementById('pieChart');
+            const ctx = canvas.getContext('2d');
+            const cats = {};
+            data.orcamento.forEach(o => {
+                cats[o.categoria] = (cats[o.categoria] || 0) + (parseFloat(o.real) || parseFloat(o.estimado) || 0);
+            });
+            const entries = Object.entries(cats);
+            if (entries.length === 0) { ctx.clearRect(0, 0, canvas.width, canvas.height); document.getElementById('pieLegend').innerHTML = ''; return; }
+            const total = entries.reduce((a, [, v]) => a + v, 0);
+            const colors = ['#f43f5e', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
+            let start = -0.5 * Math.PI;
+            const centerX = canvas.width / 2, centerY = canvas.height / 2, radius = 80;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            entries.forEach(([cat, val], i) => {
+                const slice = (val / total) * 2 * Math.PI;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, start, start + slice);
+                ctx.closePath();
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fill();
+                start += slice;
+            });
+            // donut hole
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 45, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+
+            document.getElementById('pieLegend').innerHTML = entries.map(([cat, val], i) => `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full" style="background:${colors[i % colors.length]}"></span>
+                        <span class="text-gray-700">${cat}</span>
+                    </div>
+                    <span class="font-medium text-gray-900">R$ ${formatarMoeda(val)}</span>
+                </div>
+            `).join('');
+        }
+
+        function abrirModalOrcamento(id = null) {
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            document.getElementById('modalOrcamento').classList.remove('hidden');
+            if (id) {
+                const o = data.orcamento.find(x => x.id === id);
+                document.getElementById('tituloModalOrcamento').textContent = 'Editar Item';
+                document.getElementById('orcamentoId').value = o.id;
+                document.getElementById('orcamentoItem').value = o.item;
+                document.getElementById('orcamentoCategoria').value = o.categoria;
+                document.getElementById('orcamentoEstimado').value = o.estimado;
+                document.getElementById('orcamentoReal').value = o.real;
+                document.getElementById('orcamentoStatus').value = o.status;
+            } else {
+                document.getElementById('tituloModalOrcamento').textContent = 'Adicionar Item';
+                document.getElementById('orcamentoId').value = '';
+                document.getElementById('modalOrcamento').querySelector('form').reset();
+            }
+        }
+        function salvarOrcamento(e) {
+            e.preventDefault();
+            const id = document.getElementById('orcamentoId').value;
+            const obj = {
+                id: id ? parseInt(id) : Date.now(),
+                item: document.getElementById('orcamentoItem').value,
+                categoria: document.getElementById('orcamentoCategoria').value,
+                estimado: parseFloat(document.getElementById('orcamentoEstimado').value) || 0,
+                real: parseFloat(document.getElementById('orcamentoReal').value) || 0,
+                status: document.getElementById('orcamentoStatus').value,
+            };
+            if (id) { const idx = data.orcamento.findIndex(o => o.id === parseInt(id)); data.orcamento[idx] = obj; }
+            else { data.orcamento.push(obj); }
+            fecharModal(); renderizarOrcamento(); salvarDados();
+        }
+        function editarOrcamento(id) { abrirModalOrcamento(id); }
+        function excluirOrcamento(id) { if (confirm('Excluir item?')) { data.orcamento = data.orcamento.filter(o => o.id !== id); renderizarOrcamento(); salvarDados(); } }
+
+        // ==================== TAREFAS ====================
+        function renderizarTarefas() {
+            const cols = { 'A fazer': 'colunaAfazer', 'Em andamento': 'colunaAndamento', 'Feito': 'colunaFeito' };
+            const counts = { 'A fazer': 'countAfazer', 'Em andamento': 'countAndamento', 'Feito': 'countFeito' };
+            Object.keys(cols).forEach(status => {
+                const items = data.tarefas.filter(t => t.status === status);
+                document.getElementById(counts[status]).textContent = items.length;
+                document.getElementById(cols[status]).innerHTML = items.map(t => {
+                    const pClass = t.prioridade === 'Alta' ? 'priority-alta' : t.prioridade === 'Média' ? 'priority-media' : 'priority-baixa';
+                    return `
+                    <div class="bg-white rounded-lg p-4 card-shadow cursor-pointer hover:shadow-md transition-all group" onclick="editarTarefa(${t.id})">
+                        <div class="flex items-start justify-between mb-2">
+                            <h4 class="font-medium text-gray-900 text-sm leading-snug">${escapeHtml(t.titulo)}</h4>
+                            <button onclick="event.stopPropagation(); excluirTarefa(${t.id})" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs px-2 py-0.5 rounded ${pClass}">${t.prioridade}</span>
+                            </div>
+                            <div class="text-xs text-gray-500 flex items-center space-x-2">
+                                <span><i class="far fa-user mr-1"></i>${escapeHtml(t.responsavel || 'Eu')}</span>
+                                ${t.prazo ? `<span><i class="far fa-calendar mr-1"></i>${formatarData(t.prazo)}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('') || '<div class="text-center py-8 text-gray-400 text-sm">Nenhuma tarefa</div>';
+            });
+        }
+
+        function abrirModalTarefa(id = null) {
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            document.getElementById('modalTarefa').classList.remove('hidden');
+            if (id) {
+                const t = data.tarefas.find(x => x.id === id);
+                document.getElementById('tituloModalTarefa').textContent = 'Editar Tarefa';
+                document.getElementById('tarefaId').value = t.id;
+                document.getElementById('tarefaTitulo').value = t.titulo;
+                document.getElementById('tarefaResponsavel').value = t.responsavel;
+                document.getElementById('tarefaPrazo').value = t.prazo;
+                document.getElementById('tarefaStatus').value = t.status;
+                document.getElementById('tarefaPrioridade').value = t.prioridade;
+            } else {
+                document.getElementById('tituloModalTarefa').textContent = 'Nova Tarefa';
+                document.getElementById('tarefaId').value = '';
+                document.getElementById('modalTarefa').querySelector('form').reset();
+            }
+        }
+        function salvarTarefa(e) {
+            e.preventDefault();
+            const id = document.getElementById('tarefaId').value;
+            const obj = {
+                id: id ? parseInt(id) : Date.now(),
+                titulo: document.getElementById('tarefaTitulo').value,
+                responsavel: document.getElementById('tarefaResponsavel').value,
+                prazo: document.getElementById('tarefaPrazo').value,
+                status: document.getElementById('tarefaStatus').value,
+                prioridade: document.getElementById('tarefaPrioridade').value,
+            };
+            if (id) { const idx = data.tarefas.findIndex(t => t.id === parseInt(id)); data.tarefas[idx] = obj; }
+            else { data.tarefas.push(obj); }
+            fecharModal(); renderizarTarefas(); salvarDados();
+        }
+        function editarTarefa(id) { abrirModalTarefa(id); }
+        function excluirTarefa(id) { if (confirm('Excluir tarefa?')) { data.tarefas = data.tarefas.filter(t => t.id !== id); renderizarTarefas(); salvarDados(); } }
+
+        // ==================== FORNECEDORES ====================
+        function renderizarFornecedores() {
+            const tbody = document.getElementById('tabelaFornecedores');
+            tbody.innerHTML = data.fornecedores.map(f => {
+                const statusColors = { 'Em contato': 'bg-blue-100 text-blue-700', 'Orçamento solicitado': 'bg-purple-100 text-purple-700', 'Contratado': 'bg-gold-100 text-gold-700', 'Pago': 'bg-emerald-100 text-emerald-700', 'Cancelado': 'bg-gray-100 text-gray-500' };
+                return `
+                <tr class="hover:bg-rose-50/50 transition-colors">
+                    <td class="py-3 px-4 text-sm font-medium text-gray-900">${escapeHtml(f.nome)}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(f.tipo)}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600">${escapeHtml(f.contato || '-')}</td>
+                    <td class="py-3 px-4 text-sm text-gray-600 text-right">R$ ${formatarMoeda(f.valor)}</td>
+                    <td class="py-3 px-4"><span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[f.status] || 'bg-gray-100 text-gray-700'}">${f.status}</span></td>
+                    <td class="py-3 px-4 text-sm">${f.link ? `<a href="${f.link}" target="_blank" class="text-rose-600 hover:underline"><i class="fas fa-external-link-alt mr-1"></i>Link</a>` : '-'}</td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="editarFornecedor(${f.id})" class="text-rose-600 hover:text-rose-800 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="excluirFornecedor(${f.id})" class="text-gray-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function abrirModalFornecedor(id = null) {
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            document.getElementById('modalFornecedor').classList.remove('hidden');
+            if (id) {
+                const f = data.fornecedores.find(x => x.id === id);
+                document.getElementById('tituloModalFornecedor').textContent = 'Editar Fornecedor';
+                document.getElementById('fornecedorId').value = f.id;
+                document.getElementById('fornecedorNome').value = f.nome;
+                document.getElementById('fornecedorTipo').value = f.tipo;
+                document.getElementById('fornecedorContato').value = f.contato;
+                document.getElementById('fornecedorValor').value = f.valor;
+                document.getElementById('fornecedorLink').value = f.link;
+                document.getElementById('fornecedorStatus').value = f.status;
+            } else {
+                document.getElementById('tituloModalFornecedor').textContent = 'Adicionar Fornecedor';
+                document.getElementById('fornecedorId').value = '';
+                document.getElementById('modalFornecedor').querySelector('form').reset();
+            }
+        }
+        function salvarFornecedor(e) {
+            e.preventDefault();
+            const id = document.getElementById('fornecedorId').value;
+            const obj = {
+                id: id ? parseInt(id) : Date.now(),
+                nome: document.getElementById('fornecedorNome').value,
+                tipo: document.getElementById('fornecedorTipo').value,
+                contato: document.getElementById('fornecedorContato').value,
+                valor: parseFloat(document.getElementById('fornecedorValor').value) || 0,
+                link: document.getElementById('fornecedorLink').value,
+                status: document.getElementById('fornecedorStatus').value,
+            };
+            if (id) { const idx = data.fornecedores.findIndex(f => f.id === parseInt(id)); data.fornecedores[idx] = obj; }
+            else { data.fornecedores.push(obj); }
+            fecharModal(); renderizarFornecedores(); salvarDados();
+        }
+        function editarFornecedor(id) { abrirModalFornecedor(id); }
+        function excluirFornecedor(id) { if (confirm('Excluir fornecedor?')) { data.fornecedores = data.fornecedores.filter(f => f.id !== id); renderizarFornecedores(); salvarDados(); } }
+
+        // ==================== CRONOGRAMA ====================
+        function renderizarCronograma() {
+            const container = document.getElementById('timeline');
+            const sorted = [...data.cronograma].sort((a, b) => new Date(a.data) - new Date(b.data));
+            container.innerHTML = sorted.map((c, i) => `
+                <div class="relative flex items-start pb-8 ${i === sorted.length - 1 ? '' : ''}">
+                    ${i < sorted.length - 1 ? '<div class="timeline-line"></div>' : ''}
+                    <div class="timeline-dot flex-shrink-0 mt-1.5"></div>
+                    <div class="ml-6 bg-white rounded-lg p-4 card-shadow flex-1 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-1 gap-1">
+                            <h4 class="font-semibold text-gray-900">${escapeHtml(c.evento)}</h4>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded">${formatarData(c.data)}</span>
+                                ${c.hora ? `<span class="text-sm text-gray-500">${c.hora}</span>` : ''}
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">${escapeHtml(c.desc) || ''}</p>
+                        <div class="flex justify-end mt-2 space-x-2">
+                            <button onclick="editarCronograma(${c.id})" class="text-xs text-rose-600 hover:text-rose-800 font-medium"><i class="fas fa-edit mr-1"></i>Editar</button>
+                            <button onclick="excluirCronograma(${c.id})" class="text-xs text-gray-400 hover:text-red-600 font-medium"><i class="fas fa-trash mr-1"></i>Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('') || '<div class="text-center py-12 text-gray-400">Nenhuma data cadastrada.</div>';
+        }
+
+        function abrirModalCronograma(id = null) {
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            document.getElementById('modalCronograma').classList.remove('hidden');
+            if (id) {
+                const c = data.cronograma.find(x => x.id === id);
+                document.getElementById('tituloModalCronograma').textContent = 'Editar Data';
+                document.getElementById('cronogramaId').value = c.id;
+                document.getElementById('cronogramaEvento').value = c.evento;
+                document.getElementById('cronogramaData').value = c.data;
+                document.getElementById('cronogramaHora').value = c.hora;
+                document.getElementById('cronogramaDesc').value = c.desc;
+            } else {
+                document.getElementById('tituloModalCronograma').textContent = 'Adicionar Data';
+                document.getElementById('cronogramaId').value = '';
+                document.getElementById('modalCronograma').querySelector('form').reset();
+            }
+        }
+        function salvarCronograma(e) {
+            e.preventDefault();
+            const id = document.getElementById('cronogramaId').value;
+            const obj = {
+                id: id ? parseInt(id) : Date.now(),
+                evento: document.getElementById('cronogramaEvento').value,
+                data: document.getElementById('cronogramaData').value,
+                hora: document.getElementById('cronogramaHora').value,
+                desc: document.getElementById('cronogramaDesc').value,
+            };
+            if (id) { const idx = data.cronograma.findIndex(c => c.id === parseInt(id)); data.cronograma[idx] = obj; }
+            else { data.cronograma.push(obj); }
+            fecharModal(); renderizarCronograma(); salvarDados();
+        }
+        function editarCronograma(id) { abrirModalCronograma(id); }
+        function excluirCronograma(id) { if (confirm('Excluir evento?')) { data.cronograma = data.cronograma.filter(c => c.id !== id); renderizarCronograma(); salvarDados(); } }
+
+        // ==================== NOTAS ====================
+        function salvarNotas() {
+            data.notas = document.getElementById('editorNotas').innerHTML;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+        function formatarNota(command, value = null) {
+            document.execCommand(command, false, value);
+            document.getElementById('editorNotas').focus();
+            salvarNotas();
+        }
+
+        // ==================== NOIVA NAME ====================
+        function editarNomeNoiva() {
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            document.getElementById('modalNoiva').classList.remove('hidden');
+            document.getElementById('inputNomeNoiva').value = data.noiva;
+        }
+        function salvarNomeNoiva(e) {
+            e.preventDefault();
+            data.noiva = document.getElementById('inputNomeNoiva').value;
+            fecharModal();
+            atualizarUI();
+            salvarDados();
+        }
+
+        // ==================== MODAL UTILS ====================
+        function fecharModal() {
+            document.getElementById('modalOverlay').classList.add('hidden');
+            document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+        }
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) fecharModal();
+        });
+
+        // ==================== MOBILE MENU ====================
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        // ==================== EXPORT / IMPORT ====================
+        function exportarJSON() {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `casamento_${data.noiva.toLowerCase().replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            mostrarToast('Backup exportado!');
+        }
+
+        function importarJSON(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (confirm(`Importar backup de "${imported.noiva || 'Casamento'}"? Isso substituirá todos os dados atuais.`)) {
+                        data = { ...data, ...imported };
+                        salvarDados();
+                        atualizarUI();
+                        mostrarToast('Backup importado com sucesso!');
+                    }
+                } catch (err) {
+                    alert('Arquivo inválido. Selecione um JSON exportado deste dashboard.');
+                }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        // ==================== UTILS ====================
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        function formatarMoeda(val) {
+            return (parseFloat(val) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        function formatarData(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr + 'T12:00:00');
+            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+        function mostrarToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2500);
+        }
+
+        // ==================== START ====================
+        init();
+    </script>
+</body>
+</html>
