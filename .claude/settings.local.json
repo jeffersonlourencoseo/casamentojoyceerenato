@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.google.com)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(gh *)",
+      "PowerShell(winget install *)",
+      "PowerShell(Expand-Archive *)",
+      "PowerShell(& \"$env:TEMP\\\\gh\\\\bin\\\\gh.exe\" auth status)",
+      "PowerShell(& \"$env:TEMP\\\\gh\\\\bin\\\\gh.exe\" auth login --hostname github.com --git-protocol https --web)",
+      "PowerShell(Invoke-WebRequest -Uri \"https://casamento-joyce.vercel.app\" -Method HEAD -UseBasicParsing | Select-Object StatusCode,StatusDescription)"
+    ]
+  }
+}
