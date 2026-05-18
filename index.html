@@ -57,6 +57,7 @@
         .badge-rsvp-sim { background: #dcfce7; color: #166534; }
         .badge-rsvp-nao { background: #fee2e2; color: #991b1b; }
         .badge-rsvp-talvez { background: #fef3c7; color: #92400e; }
+        .badge-rsvp-pendente { background: #f3f4f6; color: #6b7280; }
         .priority-alta { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
         .priority-media { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
         .priority-baixa { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
@@ -250,6 +251,7 @@
                         <option value="Sim">Sim</option>
                         <option value="Não">Não</option>
                         <option value="Talvez">Talvez</option>
+                        <option value="Pendente">Pendente</option>
                     </select>
                     <select id="filtroEvento" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
                         <option value="">Evento</option>
@@ -675,6 +677,7 @@
                                 <option value="Sim">Sim</option>
                                 <option value="Não">Não</option>
                                 <option value="Talvez">Talvez</option>
+                                <option value="Pendente">Pendente</option>
                             </select>
                         </div>
                         <div>
@@ -1386,9 +1389,10 @@
             document.getElementById('semConvidados').classList.add('hidden');
 
             tbody.innerHTML = filtrados.map(c => {
-                let badgeClass = 'badge-rsvp-talvez';
+                let badgeClass = 'badge-rsvp-pendente';
                 if (c.rsvp === 'Sim') badgeClass = 'badge-rsvp-sim';
                 if (c.rsvp === 'Não') badgeClass = 'badge-rsvp-nao';
+                if (c.rsvp === 'Talvez') badgeClass = 'badge-rsvp-talvez';
                 let eventoClass = 'bg-gray-100 text-gray-700';
                 if (c.momento === 'Almoço') eventoClass = 'bg-rose-100 text-rose-700';
                 if (c.momento === 'Festa') eventoClass = 'bg-purple-100 text-purple-700';
