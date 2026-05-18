@@ -160,6 +160,10 @@
                         <i class="fas fa-utensils"></i>
                         <span>Cardápio</span>
                     </button>
+                    <button onclick="switchTab('compras')" class="tab-btn tab-inactive px-4 py-3 text-sm whitespace-nowrap transition-all flex items-center space-x-2" data-tab="compras">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Compras</span>
+                    </button>
                     <button onclick="switchTab('notas')" class="tab-btn tab-inactive px-4 py-3 text-sm whitespace-nowrap transition-all flex items-center space-x-2" data-tab="notas">
                         <i class="fas fa-sticky-note"></i>
                         <span>Notas</span>
@@ -394,6 +398,56 @@
                 </div>
                 <div id="timeline" class="space-y-0">
                     <!-- JS populates -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== COMPRAS ==================== -->
+        <div id="tab-compras" class="tab-content hidden animate-fade-in">
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900">Lista de Compras</h2>
+                        <p class="text-sm text-gray-500 mt-1"><span id="countComprasPendentes">0</span> pendentes / <span id="countComprasTotal">0</span> total</p>
+                    </div>
+                    <button onclick="abrirModalCompra()" class="btn-primary text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-center space-x-2 shadow-lg shadow-rose-200">
+                        <i class="fas fa-plus"></i>
+                        <span>Adicionar Item</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                    <div class="relative flex-1">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="buscaCompra" placeholder="Buscar item..."
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm"
+                            oninput="filtrarCompras()">
+                    </div>
+                    <select id="filtroCompraStatus" onchange="filtrarCompras()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
+                        <option value="">Todos</option>
+                        <option value="Pendente">Pendentes</option>
+                        <option value="Comprado">Comprados</option>
+                    </select>
+                </div>
+
+                <div class="overflow-x-auto -mx-4 sm:mx-0">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-100">
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-10"></th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Item</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaCompras" class="divide-y divide-gray-50">
+                            <!-- JS populates -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="semCompras" class="hidden text-center py-12 text-gray-400">
+                    <i class="fas fa-shopping-cart text-4xl mb-3 text-rose-200"></i>
+                    <p>Nenhum item na lista de compras.</p>
                 </div>
             </div>
         </div>
@@ -782,6 +836,37 @@
             </div>
         </div>
 
+        <!-- Modal Compra -->
+        <div id="modalCompra" class="modal hidden bg-white rounded-xl shadow-2xl w-full max-w-lg">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4" id="tituloModalCompra">Adicionar Item</h3>
+                <form onsubmit="salvarCompra(event)" class="space-y-4">
+                    <input type="hidden" id="compraId">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Item</label>
+                        <input type="text" id="compraNome" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select id="compraStatus" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                                <option value="Pendente">Pendente</option>
+                                <option value="Comprado">Comprado</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Quantidade (opcional)</label>
+                            <input type="text" id="compraQtd" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-2">
+                        <button type="button" onclick="fecharModal()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">Cancelar</button>
+                        <button type="submit" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Modal Nome Noiva -->
         <div id="modalNoiva" class="modal hidden bg-white rounded-xl shadow-2xl w-full max-w-sm">
             <div class="p-6">
@@ -994,6 +1079,23 @@
                 { id: 2, evento: 'Compras de carnes e bebidas', data: '2025-06-14', hora: '09:00', desc: 'Ir no açougue e mercado para comprar tudo do evento.' },
                 { id: 3, evento: 'Preparativos finais', data: '2025-06-15', hora: '08:00', desc: 'Montar decoração, preparar mesa e receber equipe no Salão Tubarão.' },
             ],
+            compras: [
+                { id: 1, nome: 'Carne para churrasco (8kg)', status: 'Pendente', qtd: '' },
+                { id: 2, nome: 'Frango (4kg)', status: 'Pendente', qtd: '' },
+                { id: 3, nome: 'Porco (4kg)', status: 'Pendente', qtd: '' },
+                { id: 4, nome: 'Coração (2kg)', status: 'Pendente', qtd: '' },
+                { id: 5, nome: 'Linguiça', status: 'Pendente', qtd: '' },
+                { id: 6, nome: 'Arroz (2kg)', status: 'Pendente', qtd: '' },
+                { id: 7, nome: 'Maionese (4kg)', status: 'Pendente', qtd: '' },
+                { id: 8, nome: 'Vinagrete (2kg)', status: 'Pendente', qtd: '' },
+                { id: 9, nome: 'Farofa (2kg)', status: 'Pendente', qtd: '' },
+                { id: 10, nome: 'Chopp (3 barris)', status: 'Pendente', qtd: '' },
+                { id: 11, nome: 'Refrigerante 500ml', status: 'Pendente', qtd: '' },
+                { id: 12, nome: 'Água 300ml (43L)', status: 'Pendente', qtd: '' },
+                { id: 13, nome: 'Salgadinhos (500 un)', status: 'Pendente', qtd: '' },
+                { id: 14, nome: 'Bolo de casamento', status: 'Pendente', qtd: '' },
+                { id: 15, nome: 'Doces variados', status: 'Pendente', qtd: '' },
+            ],
             cardapio: {
                 almoco: [
                     { categoria: 'Churrasco Completo', itens: ['Carne (8kg)', 'Frango (4kg)', 'Porco (4kg)', 'Coração (2kg)', 'Linguiça'] },
@@ -1148,6 +1250,7 @@
             renderizarFornecedores();
             renderizarCronograma();
             renderizarCardapio();
+            renderizarCompras();
             document.getElementById('editorNotas').innerHTML = data.notas || '';
             atualizarContadoresMomento();
         }
@@ -1714,6 +1817,103 @@ ${itens}
             fecharModal();
             salvarDados();
         }
+
+        // ==================== COMPRAS ====================
+        function renderizarCompras() {
+            const tbody = document.getElementById('tabelaCompras');
+            const busca = document.getElementById('buscaCompra').value.toLowerCase();
+            const filtroStatus = document.getElementById('filtroCompraStatus').value;
+
+            let filtrados = (data.compras || []).filter(c => {
+                const matchBusca = !busca || c.nome.toLowerCase().includes(busca);
+                const matchStatus = !filtroStatus || c.status === filtroStatus;
+                return matchBusca && matchStatus;
+            });
+
+            const pendentes = (data.compras || []).filter(c => c.status === 'Pendente').length;
+            const total = (data.compras || []).length;
+            document.getElementById('countComprasPendentes').textContent = pendentes;
+            document.getElementById('countComprasTotal').textContent = total;
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '';
+                document.getElementById('semCompras').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('semCompras').classList.add('hidden');
+
+            tbody.innerHTML = filtrados.map(c => {
+                const statusClass = c.status === 'Comprado'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-rose-100 text-rose-700';
+                const checked = c.status === 'Comprado' ? 'checked' : '';
+                const textDecoration = c.status === 'Comprado' ? 'line-through text-gray-400' : 'text-gray-900';
+                return `
+                <tr class="hover:bg-rose-50/50 transition-colors">
+                    <td class="py-3 px-4">
+                        <input type="checkbox" ${checked} onchange="alternarStatusCompra(${c.id})"
+                            class="w-5 h-5 rounded border-gray-300 text-rose-600 focus:ring-rose-500 cursor-pointer">
+                    </td>
+                    <td class="py-3 px-4 text-sm font-medium ${textDecoration}">${escapeHtml(c.nome)} ${c.qtd ? '<span class="text-xs text-gray-400 ml-1">('+escapeHtml(c.qtd)+')</span>' : ''}</td>
+                    <td class="py-3 px-4"><span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${statusClass}">${c.status}</span></td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="editarCompra(${c.id})" class="text-rose-600 hover:text-rose-800 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="excluirCompra(${c.id})" class="text-gray-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function filtrarCompras() { renderizarCompras(); }
+
+        function alternarStatusCompra(id) {
+            const idx = (data.compras || []).findIndex(c => c.id === id);
+            if (idx === -1) return;
+            data.compras[idx].status = data.compras[idx].status === 'Comprado' ? 'Pendente' : 'Comprado';
+            renderizarCompras();
+            salvarDados();
+        }
+
+        function abrirModalCompra(id = null) {
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            document.getElementById('modalCompra').classList.remove('hidden');
+            if (id) {
+                const c = (data.compras || []).find(x => x.id === id);
+                document.getElementById('tituloModalCompra').textContent = 'Editar Item';
+                document.getElementById('compraId').value = c.id;
+                document.getElementById('compraNome').value = c.nome;
+                document.getElementById('compraStatus').value = c.status;
+                document.getElementById('compraQtd').value = c.qtd;
+            } else {
+                document.getElementById('tituloModalCompra').textContent = 'Adicionar Item';
+                document.getElementById('compraId').value = '';
+                document.getElementById('modalCompra').querySelector('form').reset();
+            }
+        }
+
+        function salvarCompra(e) {
+            e.preventDefault();
+            const id = document.getElementById('compraId').value;
+            const obj = {
+                id: id ? parseInt(id) : Date.now(),
+                nome: document.getElementById('compraNome').value,
+                status: document.getElementById('compraStatus').value,
+                qtd: document.getElementById('compraQtd').value,
+            };
+            if (id) {
+                const idx = (data.compras || []).findIndex(c => c.id === parseInt(id));
+                data.compras[idx] = obj;
+            } else {
+                if (!data.compras) data.compras = [];
+                data.compras.push(obj);
+            }
+            fecharModal();
+            renderizarCompras();
+            salvarDados();
+        }
+
+        function editarCompra(id) { abrirModalCompra(id); }
+        function excluirCompra(id) { if (confirm('Excluir item?')) { data.compras = (data.compras || []).filter(c => c.id !== id); renderizarCompras(); salvarDados(); } }
 
         // ==================== MODAL UTILS ====================
         function fecharModal() {
