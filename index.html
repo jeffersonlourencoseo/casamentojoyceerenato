@@ -219,7 +219,7 @@
                 </div>
 
                 <!-- Summary Counts -->
-                <div class="flex flex-wrap gap-3 mb-4">
+                <div class="flex flex-wrap gap-2 sm:gap-3 mb-4">
                     <div class="bg-rose-50 border border-rose-100 rounded-lg px-3 py-2 text-sm">
                         <span class="font-medium text-rose-700">Almoço:</span> <span id="countAlmoco" class="font-bold">0</span>
                     </div>
@@ -229,27 +229,43 @@
                     <div class="bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 text-sm">
                         <span class="font-medium text-emerald-700">Ambos:</span> <span id="countAmbos" class="font-bold">0</span>
                     </div>
+                    <div class="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 text-sm">
+                        <span class="font-medium text-blue-700">Adultos:</span> <span id="countAdultos" class="font-bold">0</span>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-100 rounded-lg px-3 py-2 text-sm">
+                        <span class="font-medium text-purple-700">Crianças:</span> <span id="countCriancas" class="font-bold">0</span>
+                    </div>
                 </div>
 
                 <!-- Filters -->
-                <div class="flex flex-col sm:flex-row gap-3 mb-4">
-                    <div class="relative flex-1">
+                <div class="grid grid-cols-2 sm:flex gap-2 sm:gap-3 mb-4">
+                    <div class="relative col-span-2 sm:col-span-1 sm:flex-1">
                         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                         <input type="text" id="buscaConvidado" placeholder="Buscar por nome..."
                             class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm"
                             oninput="filtrarConvidados()">
                     </div>
                     <select id="filtroRSVP" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
-                        <option value="">Todos</option>
+                        <option value="">Confirmado</option>
                         <option value="Sim">Sim</option>
                         <option value="Não">Não</option>
                         <option value="Talvez">Talvez</option>
                     </select>
-                    <select id="filtroMomento" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
-                        <option value="">Todos Momentos</option>
+                    <select id="filtroEvento" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
+                        <option value="">Evento</option>
                         <option value="Almoço">Almoço</option>
                         <option value="Festa">Festa</option>
                         <option value="Ambos">Ambos</option>
+                    </select>
+                    <select id="filtroTipo" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
+                        <option value="">Tipo</option>
+                        <option value="Adulto">Adulto</option>
+                        <option value="Criança">Criança</option>
+                    </select>
+                    <select id="filtroBebedor" onchange="filtrarConvidados()" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none input-rose text-sm bg-white">
+                        <option value="">Bebedor</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
                     </select>
                 </div>
 
@@ -260,8 +276,9 @@
                             <tr class="border-b border-gray-100">
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome</th>
                                 <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Confirmado</th>
-                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Momento</th>
-                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Observações</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Evento</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipo</th>
+                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Bebedor</th>
                                 <th class="py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Ações</th>
                             </tr>
                         </thead>
@@ -647,13 +664,13 @@
                 <form onsubmit="salvarConvidado(event)" class="space-y-4">
                     <input type="hidden" id="convidadoId">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nome <span class="text-red-500">*</span></label>
                         <input type="text" id="convidadoNome" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Confirmado</label>
-                            <select id="convidadoRSVP" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Confirmado <span class="text-red-500">*</span></label>
+                            <select id="convidadoRSVP" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
                                 <option value="">Selecione</option>
                                 <option value="Sim">Sim</option>
                                 <option value="Não">Não</option>
@@ -661,17 +678,32 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Momento</label>
-                            <select id="convidadoMomento" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Evento <span class="text-red-500">*</span></label>
+                            <select id="convidadoMomento" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                                <option value="">Selecione</option>
                                 <option value="Almoço">Almoço</option>
                                 <option value="Festa">Festa</option>
                                 <option value="Ambos">Ambos</option>
                             </select>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
-                        <textarea id="convidadoObs" rows="2" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose resize-none"></textarea>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo <span class="text-red-500">*</span></label>
+                            <select id="convidadoTipo" required onchange="aoMudarTipoConvidado()" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                                <option value="">Selecione</option>
+                                <option value="Adulto">Adulto</option>
+                                <option value="Criança">Criança</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Bebedor <span class="text-red-500">*</span></label>
+                            <select id="convidadoBebedor" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none input-rose bg-white">
+                                <option value="">Selecione</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="flex justify-end space-x-3 pt-2">
                         <button type="button" onclick="fecharModal()" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">Cancelar</button>
@@ -1291,12 +1323,19 @@
 
         function atualizarContadoresMomento() {
             const counts = { 'Almoço': 0, 'Festa': 0, 'Ambos': 0 };
+            let adultos = 0, criancas = 0;
             data.convidados.forEach(c => {
                 if (c.momento) counts[c.momento]++;
+                if (!c.tipo) c.tipo = (c.obs || '').toLowerCase().includes('criança') ? 'Criança' : 'Adulto';
+                if (!c.bebedor) c.bebedor = c.tipo === 'Criança' ? 'Não' : 'Sim';
+                if (c.tipo === 'Adulto') adultos++;
+                if (c.tipo === 'Criança') criancas++;
             });
             document.getElementById('countAlmoco').textContent = counts['Almoço'];
             document.getElementById('countFesta').textContent = counts['Festa'];
             document.getElementById('countAmbos').textContent = counts['Ambos'];
+            document.getElementById('countAdultos').textContent = adultos;
+            document.getElementById('countCriancas').textContent = criancas;
         }
 
         // ==================== TABS ====================
@@ -1319,13 +1358,22 @@
             const tbody = document.getElementById('tabelaConvidados');
             const busca = document.getElementById('buscaConvidado').value.toLowerCase();
             const filtroRSVP = document.getElementById('filtroRSVP').value;
-            const filtroMomento = document.getElementById('filtroMomento').value;
+            const filtroEvento = document.getElementById('filtroEvento').value;
+            const filtroTipo = document.getElementById('filtroTipo').value;
+            const filtroBebedor = document.getElementById('filtroBebedor').value;
+
+            data.convidados.forEach(c => {
+                if (!c.tipo) c.tipo = (c.obs || '').toLowerCase().includes('criança') ? 'Criança' : 'Adulto';
+                if (!c.bebedor) c.bebedor = c.tipo === 'Criança' ? 'Não' : 'Sim';
+            });
 
             let filtrados = data.convidados.filter(c => {
                 const matchBusca = !busca || c.nome.toLowerCase().includes(busca);
                 const matchRSVP = !filtroRSVP || c.rsvp === filtroRSVP;
-                const matchMomento = !filtroMomento || c.momento === filtroMomento;
-                return matchBusca && matchRSVP && matchMomento;
+                const matchEvento = !filtroEvento || c.momento === filtroEvento;
+                const matchTipo = !filtroTipo || c.tipo === filtroTipo;
+                const matchBebedor = !filtroBebedor || c.bebedor === filtroBebedor;
+                return matchBusca && matchRSVP && matchEvento && matchTipo && matchBebedor;
             });
 
             document.getElementById('totalConvidados').textContent = filtrados.length;
@@ -1341,16 +1389,19 @@
                 let badgeClass = 'badge-rsvp-talvez';
                 if (c.rsvp === 'Sim') badgeClass = 'badge-rsvp-sim';
                 if (c.rsvp === 'Não') badgeClass = 'badge-rsvp-nao';
-                let momentoClass = 'bg-gray-100 text-gray-700';
-                if (c.momento === 'Almoço') momentoClass = 'bg-rose-100 text-rose-700';
-                if (c.momento === 'Festa') momentoClass = 'bg-purple-100 text-purple-700';
-                if (c.momento === 'Ambos') momentoClass = 'bg-emerald-100 text-emerald-700';
+                let eventoClass = 'bg-gray-100 text-gray-700';
+                if (c.momento === 'Almoço') eventoClass = 'bg-rose-100 text-rose-700';
+                if (c.momento === 'Festa') eventoClass = 'bg-purple-100 text-purple-700';
+                if (c.momento === 'Ambos') eventoClass = 'bg-emerald-100 text-emerald-700';
+                const tipoClass = c.tipo === 'Criança' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700';
+                const bebedorClass = c.bebedor === 'Sim' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600';
                 return `
                 <tr class="hover:bg-rose-50/50 transition-colors">
                     <td class="py-3 px-4 text-sm font-medium text-gray-900">${escapeHtml(c.nome)}</td>
                     <td class="py-3 px-4"><span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${badgeClass}">${c.rsvp || 'Pendente'}</span></td>
-                    <td class="py-3 px-4"><span class="inline-flex px-2 py-1 rounded-full text-xs font-medium ${momentoClass}">${c.momento || 'Festa'}</span></td>
-                    <td class="py-3 px-4 text-sm text-gray-600 max-w-[200px] truncate" title="${escapeHtml(c.obs)}">${escapeHtml(c.obs || '-')}</td>
+                    <td class="py-3 px-4"><span class="inline-flex px-2 py-1 rounded-full text-xs font-medium ${eventoClass}">${c.momento || 'Festa'}</span></td>
+                    <td class="py-3 px-4"><span class="inline-flex px-2 py-1 rounded-full text-xs font-medium ${tipoClass}">${c.tipo}</span></td>
+                    <td class="py-3 px-4"><span class="inline-flex px-2 py-1 rounded-full text-xs font-medium ${bebedorClass}">${c.bebedor}</span></td>
                     <td class="py-3 px-4 text-right">
                         <button onclick="editarConvidado(${c.id})" class="text-rose-600 hover:text-rose-800 mr-1 p-1 sm:p-0"><i class="fas fa-edit"></i></button>
                         <button onclick="excluirConvidado(${c.id})" class="text-gray-400 hover:text-red-600 p-1 sm:p-0"><i class="fas fa-trash"></i></button>
@@ -1370,8 +1421,9 @@
                 document.getElementById('convidadoId').value = c.id;
                 document.getElementById('convidadoNome').value = c.nome;
                 document.getElementById('convidadoRSVP').value = c.rsvp;
-                document.getElementById('convidadoMomento').value = c.momento || 'Festa';
-                document.getElementById('convidadoObs').value = c.obs;
+                document.getElementById('convidadoMomento').value = c.momento || '';
+                document.getElementById('convidadoTipo').value = c.tipo || '';
+                document.getElementById('convidadoBebedor').value = c.bebedor || '';
             } else {
                 document.getElementById('tituloModalConvidado').textContent = 'Adicionar Convidado';
                 document.getElementById('convidadoId').value = '';
@@ -1379,15 +1431,34 @@
             }
         }
 
+        function aoMudarTipoConvidado() {
+            const tipo = document.getElementById('convidadoTipo').value;
+            if (tipo === 'Criança') {
+                document.getElementById('convidadoBebedor').value = 'Não';
+            }
+        }
+
         function salvarConvidado(e) {
             e.preventDefault();
             const id = document.getElementById('convidadoId').value;
+            const nome = document.getElementById('convidadoNome').value.trim();
+            const rsvp = document.getElementById('convidadoRSVP').value;
+            const momento = document.getElementById('convidadoMomento').value;
+            const tipo = document.getElementById('convidadoTipo').value;
+            const bebedor = document.getElementById('convidadoBebedor').value;
+
+            if (!nome || !rsvp || !momento || !tipo || !bebedor) {
+                alert('Preencha todos os campos obrigatórios.');
+                return;
+            }
+
             const obj = {
                 id: id ? parseInt(id) : Date.now(),
-                nome: document.getElementById('convidadoNome').value,
-                rsvp: document.getElementById('convidadoRSVP').value,
-                momento: document.getElementById('convidadoMomento').value,
-                obs: document.getElementById('convidadoObs').value,
+                nome,
+                rsvp,
+                momento,
+                tipo,
+                bebedor,
             };
             if (id) {
                 const idx = data.convidados.findIndex(c => c.id === parseInt(id));
@@ -1406,7 +1477,6 @@
             if (confirm('Excluir convidado?')) {
                 data.convidados = data.convidados.filter(c => c.id !== id);
                 renderizarConvidados();
-                atualizarFiltroMesas();
                 atualizarContadoresMomento();
                 salvarDados();
             }
